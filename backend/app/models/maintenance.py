@@ -135,6 +135,9 @@ class MaintenanceLog(Base):
     
     # Relationships
     drone: Mapped["Drone"] = relationship("Drone", back_populates="maintenance_logs")
+    technician: Mapped["User"] = relationship("User", foreign_keys=[technician_id])
+    verifier: Mapped[Optional["User"]] = relationship("User", foreign_keys=[verifier_id])
+    creator: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by])
 
 
 # Import Drone for relationship type hints
@@ -183,6 +186,7 @@ class ComplianceViolation(Base):
     status: Mapped[ViolationStatus] = mapped_column(SQLEnum(ViolationStatus), default=ViolationStatus.OPEN)
     resolution_notes: Mapped[Optional[str]] = mapped_column(Text)
     resolved_by: Mapped[Optional[UUID]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    resolver: Mapped[Optional["User"]] = relationship("User", foreign_keys=[resolved_by])
     resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     
     # Penalties (BVA 2024 Section 45)
@@ -203,6 +207,7 @@ class AuditLog(Base):
     
     # Who
     user_id: Mapped[Optional[UUID]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[user_id])
     user_email: Mapped[Optional[str]] = mapped_column(String(255))
     user_role: Mapped[Optional[str]] = mapped_column(String(50))
     ip_address: Mapped[Optional[str]] = mapped_column(String(45))  # IPv6 compatible

@@ -151,8 +151,9 @@ class User(Base):
     
     # Relationships
     organization: Mapped[Optional["Organization"]] = relationship("Organization", back_populates="users")
-    pilot_profile: Mapped[Optional["Pilot"]] = relationship("Pilot", back_populates="user", uselist=False)
+    pilot_profile: Mapped[Optional["Pilot"]] = relationship("Pilot", foreign_keys="Pilot.user_id", back_populates="user", uselist=False)
     owned_drones: Mapped[List["Drone"]] = relationship("Drone", foreign_keys="Drone.owner_id", back_populates="owner")
+    assigned_drones: Mapped[List["Drone"]] = relationship("Drone", foreign_keys="Drone.assigned_pilot_id", back_populates="assigned_pilot")
 
 
 class TypeCertificate(Base):
@@ -240,6 +241,7 @@ class TypeCertificate(Base):
     # Relationships
     manufacturer: Mapped["Organization"] = relationship("Organization", back_populates="type_certificates")
     drones: Mapped[List["Drone"]] = relationship("Drone", back_populates="type_certificate")
+    creator: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by])
 
 
 class Drone(Base):
@@ -292,6 +294,8 @@ class Drone(Base):
     # Relationships
     type_certificate: Mapped["TypeCertificate"] = relationship("TypeCertificate", back_populates="drones")
     owner: Mapped[Optional["User"]] = relationship("User", foreign_keys=[owner_id], back_populates="owned_drones")
+    assigned_pilot: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_pilot_id], back_populates="assigned_drones")
+    creator: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by])
     organization: Mapped[Optional["Organization"]] = relationship("Organization", back_populates="drones")
     flight_plans: Mapped[List["FlightPlan"]] = relationship("FlightPlan", back_populates="drone")
     maintenance_logs: Mapped[List["MaintenanceLog"]] = relationship("MaintenanceLog", back_populates="drone")
@@ -347,5 +351,6 @@ class Pilot(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="pilot_profile")
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="pilot_profile")
+    creator: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by])
     flight_plans: Mapped[List["FlightPlan"]] = relationship("FlightPlan", back_populates="pilot")

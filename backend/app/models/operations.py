@@ -103,6 +103,7 @@ class FlightPlan(Base):
     # Relationships
     drone: Mapped["Drone"] = relationship("Drone", back_populates="flight_plans")
     pilot: Mapped["Pilot"] = relationship("Pilot", back_populates="flight_plans")
+    creator: Mapped[Optional["User"]] = relationship("User", foreign_keys=[created_by])
     permission_artifact: Mapped[Optional["PermissionArtifact"]] = relationship("PermissionArtifact", back_populates="flight_plan", uselist=False)
     flight_log_summary: Mapped[Optional["FlightLogSummary"]] = relationship("FlightLogSummary", back_populates="flight_plan", uselist=False)
 
