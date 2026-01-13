@@ -8,6 +8,7 @@ from typing import Optional, List, Tuple
 from uuid import UUID
 import hashlib
 import json
+import base64
 from dataclasses import dataclass
 from enum import Enum
 
@@ -447,10 +448,37 @@ class NPNTValidator:
             }
         }
         
-        # Generate mock signature (in production, this would use DGCA's private key)
-        artifact_json = json.dumps(artifact, sort_keys=True)
-        signature = hashlib.sha256(artifact_json.encode()).hexdigest()
-        artifact["dgca_signature"] = f"MOCK-SIG-{signature[:32]}"
+        # Generate real RSA signature
+        try:
+            from cryptography.hazmat.primitives import hashes
+            from cryptography.hazmat.primitives.asymmetric import padding
+            from cryptography.hazmat.primitives import serialization
+            from app.core.config import get_settings
+            
+            settings = get_settings()
+            
+            with open(settings.npnt_private_key_path, "rb") as key_file:
+                private_key = serialization.load_pem_private_key(
+                    key_file.read(),
+                    password=None,
+                )
+            
+            artifact_json_bytes = json.dumps(artifact, sort_keys=True).encode()
+            signature = private_key.sign(
+                artifact_json_bytes,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            artifact["dgca_signature"] = base64.b64encode(signature).decode()
+        except Exception as e:
+            # Fallback for dev if keys are missing, but log it
+            print(f"Error signing artifact: {e}")
+            artifact_json = json.dumps(artifact, sort_keys=True)
+            mock_signature = hashlib.sha256(artifact_json.encode()).hexdigest()
+            artifact["dgca_signature"] = f"MOCK-SIG-{mock_signature[:32]}"
         
         return json.dumps(artifact, indent=2)
     

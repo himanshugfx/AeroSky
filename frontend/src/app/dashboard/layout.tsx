@@ -31,21 +31,25 @@ const navigation = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter()
     const pathname = usePathname()
-    const { user, isAuthenticated, logout } = useAuthStore()
+    const { user, isAuthenticated, _hydrated, logout } = useAuthStore()
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (_hydrated && !isAuthenticated) {
             router.push('/login')
         }
-    }, [isAuthenticated, router])
+    }, [_hydrated, isAuthenticated, router])
 
     const handleLogout = () => {
         logout()
         router.push('/login')
     }
 
-    if (!isAuthenticated) {
-        return null
+    if (!_hydrated || (!isAuthenticated && _hydrated)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        )
     }
 
     return (
@@ -54,8 +58,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <aside className="w-64 bg-white border-r border-gray-200 fixed h-full">
                 <div className="p-6 border-b border-gray-200">
                     <Link href="/dashboard" className="flex items-center gap-2 text-blue-900">
-                        <Shield className="w-8 h-8" />
-                        <span className="text-xl font-bold">AeroSky</span>
+                        <Shield className="w-8 h-8 text-amber-500" />
+                        <span className="text-xl font-bold tracking-tight">Aerosys</span>
                     </Link>
                 </div>
 

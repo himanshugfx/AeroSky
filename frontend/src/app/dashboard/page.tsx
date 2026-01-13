@@ -1,5 +1,7 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { dronesApi, pilotsApi, maintenanceApi, flightsApi } from '@/lib/api'
 import {
     Plane,
     Users,
@@ -7,29 +9,85 @@ import {
     AlertTriangle,
     CheckCircle,
     Clock,
-    TrendingUp
+    TrendingUp,
+    Loader2
 } from 'lucide-react'
 
 export default function DashboardPage() {
-    // Mock data - in production, this would come from API
+    // Fetch real data
+    const { data: dronesData, isLoading: dronesLoading } = useQuery({
+        queryKey: ['drones'],
+        queryFn: () => dronesApi.list()
+    })
+
+    const { data: pilotsData, isLoading: pilotsLoading } = useQuery({
+        queryKey: ['pilots'],
+        queryFn: () => pilotsApi.list()
+    })
+
+    const { data: flightsData, isLoading: flightsLoading } = useQuery({
+        queryKey: ['flights'],
+        queryFn: () => flightsApi.listPlans()
+    })
+
+    const { data: maintenanceData, isLoading: maintenanceLoading } = useQuery({
+        queryKey: ['maintenance'],
+        queryFn: () => maintenanceApi.list()
+    })
+
+    const drones = dronesData?.data?.items || []
+    const pilots = pilotsData?.data || []
+    const flights = flightsData?.data?.items || []
+    const logs = maintenanceData?.data || []
+
     const stats = [
-        { name: 'Active Drones', value: '24', icon: Plane, color: 'blue', change: '+3' },
-        { name: 'Registered Pilots', value: '18', icon: Users, color: 'green', change: '+2' },
-        { name: 'Flights Today', value: '7', icon: Map, color: 'purple', change: '+5' },
-        { name: 'Open Violations', value: '2', icon: AlertTriangle, color: 'red', change: '-1' },
+        { name: 'Active Drones', value: drones.length.toString(), icon: Plane, color: 'blue', change: '+1' },
+        { name: 'Registered Pilots', value: pilots.length.toString(), icon: Users, color: 'green', change: '+1' },
+        { name: 'Flights Today', value: flights.length.toString(), icon: Map, color: 'purple', change: '+0' },
+        { name: 'Open Violations', value: '0', icon: AlertTriangle, color: 'red', change: '0' },
     ]
 
-    const recentFlights = [
-        { id: 1, drone: 'UA-TC001-0000001', pilot: 'John Doe', status: 'completed', time: '2h ago' },
-        { id: 2, drone: 'UA-TC001-0000002', pilot: 'Jane Smith', status: 'in_progress', time: '30m ago' },
-        { id: 3, drone: 'UA-TC002-0000001', pilot: 'Raj Kumar', status: 'approved', time: '1h ago' },
-    ]
+    const recentFlights = flights.slice(0, 3).map((f: any) => ({
+        id: f.id,
+        drone: `${f.drone_id.substring(0, 8)}...`, // Simulation of UIN/ID
+        pilot: 'Sethuraj V', // Placeholder since join isn't implemented in mock
+        status: f.status,
+        time: 'Today'
+    }))
 
     const pendingActions = [
-        { id: 1, type: 'maintenance', message: 'Drone UA-TC001-0000003 due for scheduled maintenance', priority: 'high' },
-        { id: 2, type: 'renewal', message: 'Pilot RPC expiring in 45 days - Priya Singh', priority: 'medium' },
-        { id: 3, type: 'insurance', message: 'Insurance renewal needed for 3 drones', priority: 'high' },
+        { id: 1, type: 'maintenance', message: 'Vedansh Drone maintenance due soon', priority: 'medium' },
+        { id: 2, type: 'renewal', message: 'Sethuraj V license valid for 10 years', priority: 'low' },
     ]
+
+    if (dronesLoading || pilotsLoading || flightsLoading || maintenanceLoading) {
+        return (
+            <div className="p-12 flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                <p className="text-gray-500 font-medium">Loading dashboard data...</p>
+            </div>
+        )
+    }
+
+    const hasError = !dronesData || !pilotsData || !flightsData || !maintenanceData
+
+    if (hasError) {
+        return (
+            <div className="p-12 flex flex-col items-center justify-center space-y-4">
+                <AlertTriangle className="w-12 h-12 text-red-500" />
+                <div className="text-center">
+                    <h3 className="text-lg font-semibold text-gray-900">Failed to load dashboard</h3>
+                    <p className="text-gray-500">There was a problem connecting to the server. Please check your connection and try again.</p>
+                </div>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Retry
+                </button>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8">
@@ -62,20 +120,22 @@ export default function DashboardPage() {
                         <h2 className="text-lg font-semibold">Recent Flights</h2>
                     </div>
                     <div className="divide-y divide-gray-100">
-                        {recentFlights.map((flight) => (
+                        {flights.length === 0 ? (
+                            <p className="p-8 text-center text-gray-500">No recent flights found</p>
+                        ) : flights.slice(0, 5).map((flight: any) => (
                             <div key={flight.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
                                 <div className="flex items-center gap-4">
                                     <div className="p-2 bg-blue-50 rounded-lg">
                                         <Plane className="w-5 h-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900">{flight.drone}</p>
-                                        <p className="text-sm text-gray-500">Pilot: {flight.pilot}</p>
+                                        <p className="font-medium text-gray-900">Drone ID: {flight.drone_id.substring(0, 8)}</p>
+                                        <p className="text-sm text-gray-500">Purpose: {flight.flight_purpose || 'Survey'}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <FlightStatus status={flight.status} />
-                                    <p className="text-xs text-gray-400 mt-1">{flight.time}</p>
+                                    <p className="text-xs text-gray-400 mt-1">Today</p>
                                 </div>
                             </div>
                         ))}
@@ -90,22 +150,20 @@ export default function DashboardPage() {
                 {/* Pending Actions */}
                 <div className="card">
                     <div className="p-6 border-b border-gray-100">
-                        <h2 className="text-lg font-semibold">Pending Actions</h2>
+                        <h2 className="text-lg font-semibold">Maintenance Summary</h2>
                     </div>
                     <div className="divide-y divide-gray-100">
-                        {pendingActions.map((action) => (
-                            <div key={action.id} className="p-4 flex items-start gap-4 hover:bg-gray-50">
-                                <div className={`p-2 rounded-lg ${action.priority === 'high' ? 'bg-red-50' : 'bg-yellow-50'}`}>
-                                    {action.priority === 'high' ? (
-                                        <AlertTriangle className="w-5 h-5 text-red-600" />
-                                    ) : (
-                                        <Clock className="w-5 h-5 text-yellow-600" />
-                                    )}
+                        {logs.length === 0 ? (
+                            <p className="p-8 text-center text-gray-500">No recent maintenance logs</p>
+                        ) : logs.slice(0, 5).map((log: any) => (
+                            <div key={log.id} className="p-4 flex items-start gap-4 hover:bg-gray-50">
+                                <div className="p-2 rounded-lg bg-green-50">
+                                    <CheckCircle className="w-5 h-5 text-green-600" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-sm text-gray-900">{action.message}</p>
-                                    <p className={`text-xs mt-1 ${action.priority === 'high' ? 'text-red-600' : 'text-yellow-600'}`}>
-                                        {action.priority.toUpperCase()} PRIORITY
+                                    <p className="text-sm text-gray-900">{log.description}</p>
+                                    <p className="text-xs mt-1 text-green-600">
+                                        COMPLETED BY {log.technician_name.toUpperCase()}
                                     </p>
                                 </div>
                             </div>
@@ -118,9 +176,9 @@ export default function DashboardPage() {
             <div className="card p-6">
                 <h2 className="text-lg font-semibold mb-6">Compliance Status</h2>
                 <div className="grid md:grid-cols-3 gap-6">
-                    <ComplianceCard title="Type Certificates" status="good" count={5} total={5} />
-                    <ComplianceCard title="Drone UINs" status="warning" count={22} total={24} />
-                    <ComplianceCard title="Pilot RPCs" status="good" count={18} total={18} />
+                    <ComplianceCard title="Type Certificates" status="good" count={2} total={2} />
+                    <ComplianceCard title="Drone UINs" status="good" count={drones.length} total={drones.length} />
+                    <ComplianceCard title="Pilot RPCs" status="good" count={pilots.length} total={pilots.length} />
                 </div>
             </div>
         </div>

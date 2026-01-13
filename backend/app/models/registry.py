@@ -17,6 +17,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from geoalchemy2 import Geometry
 
 from app.core.database import Base
+from app.core.encryption import encryption_service
 
 
 # ============================================================================
@@ -136,7 +137,7 @@ class User(Base):
     phone: Mapped[Optional[str]] = mapped_column(String(20))
     role: Mapped[UserRole] = mapped_column(SQLEnum(UserRole), default=UserRole.PILOT)
     organization_id: Mapped[Optional[UUID]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("organizations.id"))
-    aadhaar_number: Mapped[Optional[str]] = mapped_column(String(12))  # Encrypted
+    _aadhaar_number: Mapped[Optional[str]] = mapped_column("aadhaar_number", String(255)) # Store encrypted
     id_type: Mapped[Optional[IDType]] = mapped_column(SQLEnum(IDType))
     id_number: Mapped[Optional[str]] = mapped_column(String(50))
     address: Mapped[Optional[str]] = mapped_column(Text)
@@ -148,6 +149,21 @@ class User(Base):
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    @property
+    def aadhaar_number(self) -> Optional[str]:
+        """Decrypt aadhaar number on access."""
+        if self._aadhaar_number:
+            return encryption_service.decrypt(self._aadhaar_number)
+        return None
+
+    @aadhaar_number.setter
+    def aadhaar_number(self, value: Optional[str]):
+        """Encrypt aadhaar number before saving."""
+        if value:
+            self._aadhaar_number = encryption_service.encrypt(value)
+        else:
+            self._aadhaar_number = None
     
     # Relationships
     organization: Mapped[Optional["Organization"]] = relationship("Organization", back_populates="users")

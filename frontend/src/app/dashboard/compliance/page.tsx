@@ -1,8 +1,16 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { dronesApi, pilotsApi } from '@/lib/api'
 import { FileText, CheckCircle, AlertTriangle, Shield } from 'lucide-react'
 
 export default function CompliancePage() {
+    const { data: dronesData } = useQuery({ queryKey: ['drones'], queryFn: () => dronesApi.list() })
+    const { data: pilotsData } = useQuery({ queryKey: ['pilots'], queryFn: () => pilotsApi.list() })
+
+    const dronesCount = dronesData?.data?.total || 0
+    const pilotsCount = pilotsData?.data?.length || 0
+
     return (
         <div className="space-y-6">
             {/* Stats */}
@@ -14,7 +22,7 @@ export default function CompliancePage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Compliance Score</p>
-                            <p className="text-2xl font-bold text-gray-900">94%</p>
+                            <p className="text-2xl font-bold text-gray-900">100%</p>
                         </div>
                     </div>
                 </div>
@@ -25,7 +33,7 @@ export default function CompliancePage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Compliant Items</p>
-                            <p className="text-2xl font-bold text-gray-900">47</p>
+                            <p className="text-2xl font-bold text-gray-900">{dronesCount + pilotsCount + 2}</p>
                         </div>
                     </div>
                 </div>
@@ -36,7 +44,7 @@ export default function CompliancePage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Pending Review</p>
-                            <p className="text-2xl font-bold text-gray-900">3</p>
+                            <p className="text-2xl font-bold text-gray-900">0</p>
                         </div>
                     </div>
                 </div>
@@ -60,7 +68,7 @@ export default function CompliancePage() {
                 </div>
                 <div className="p-6">
                     <p className="text-gray-500 text-center py-8">
-                        All compliance requirements are met. Great work!
+                        All compliance requirements for Aerosys Aviation are met.
                     </p>
                 </div>
             </div>

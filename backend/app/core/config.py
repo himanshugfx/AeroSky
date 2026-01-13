@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Application
-    app_name: str = Field(default="AeroSky India")
+    app_name: str = Field(default="Aerosys Aviation")
     app_env: str = Field(default="development")
     debug: bool = Field(default=False)
     secret_key: str = Field(...)

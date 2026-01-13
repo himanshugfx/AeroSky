@@ -26,8 +26,7 @@ export default function LoginPage() {
             const { access_token } = response.data
 
             // Get user info
-            localStorage.setItem('access_token', access_token)
-            const userResponse = await authApi.me()
+            const userResponse = await authApi.me(access_token)
 
             setAuth(userResponse.data, access_token)
             router.push('/dashboard')
@@ -44,7 +43,7 @@ export default function LoginPage() {
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-2 text-blue-900">
                         <Shield className="w-10 h-10" />
-                        <span className="text-2xl font-bold">AeroSky India</span>
+                        <span className="text-2xl font-bold text-gray-900">Aerosys Aviation</span>
                     </Link>
                     <h2 className="mt-6 text-3xl font-bold text-gray-900">Sign in</h2>
                     <p className="mt-2 text-gray-600">Access your compliance dashboard</p>

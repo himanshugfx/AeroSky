@@ -1,8 +1,8 @@
-# AeroSky India
+# Aerosys Aviation India
 
-**Drone Compliance Platform for DGCA Regulatory Requirements**
+**Advanced Drone Solutions & Compliance Platform for DGCA Regulatory Requirements**
 
-A comprehensive web-based compliance engine for Indian drone manufacturers and service providers, implementing DGCA regulations including Drone Rules 2021, Bharatiya Vayuyan Adhiniyam 2024, and Draft Civil Drone Bill 2025.
+Aerosys Aviation India Private Limited (IIT Kanpur Incubated) provides a comprehensive web-based compliance engine for Indian drone manufacturers and service providers, implementing DGCA regulations including Drone Rules 2021, Bharatiya Vayuyan Adhiniyam 2024, and Draft Civil Drone Bill 2025.
 
 ![License](https://img.shields.io/badge/license-Proprietary-blue)
 ![Python](https://img.shields.io/badge/python-3.11+-green)
@@ -131,7 +131,7 @@ DGCA/
 
 ```bash
 git clone <repository-url>
-cd DGCA
+cd Aerosys-Aviation
 ```
 
 ### Backend Setup
@@ -172,8 +172,8 @@ npm install
 **Option 2: Local PostgreSQL**
 
 ```bash
-createdb AeroSky_india
-psql AeroSky_india < database/schema.sql
+createdb aerosys_aviation
+psql aerosys_aviation < database/schema.sql
 ```
 
 ---
@@ -192,7 +192,7 @@ Edit with your values:
 
 ```env
 # Application
-APP_NAME=AeroSky India
+APP_NAME=Aerosys Aviation
 APP_ENV=development
 DEBUG=true
 SECRET_KEY=your-secret-key-min-32-chars
@@ -384,7 +384,7 @@ Proprietary - All Rights Reserved
 
 ## Support
 
-For support, contact: support@AeroSkyindia.com
+For support, contact: contact@aerosysaviation.com
 
 ---
 

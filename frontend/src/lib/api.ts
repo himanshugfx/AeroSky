@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAuthStore } from './store'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -11,11 +12,9 @@ export const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('access_token')
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
-        }
+    const token = useAuthStore.getState().accessToken
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
     }
     return config
 })
@@ -25,8 +24,8 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
+            useAuthStore.getState().logout()
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('access_token')
                 window.location.href = '/login'
             }
         }
@@ -42,13 +41,17 @@ export const authApi = {
         }),
     register: (data: { email: string; password: string; full_name: string }) =>
         api.post('/auth/register', data),
-    me: () => api.get('/auth/me'),
+    me: (token?: string) => api.get('/auth/me', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined
+    }),
 }
 
 // Drones API
 export const dronesApi = {
     list: (params?: { skip?: number; limit?: number; status?: string }) =>
         api.get('/drones', { params }),
+    listModels: () => api.get('/drones/models'),
+    createModel: (data: any) => api.post('/drones/models', data),
     get: (id: string) => api.get(`/drones/${id}`),
     create: (data: any) => api.post('/drones', data),
     update: (id: string, data: any) => api.patch(`/drones/${id}`, data),
@@ -56,9 +59,24 @@ export const dronesApi = {
     activate: (id: string) => api.post(`/drones/${id}/activate`),
 }
 
+// Pilots API
+export const pilotsApi = {
+    list: (params?: { skip?: number; limit?: number }) =>
+        api.get('/pilots', { params }),
+    get: (id: string) => api.get(`/pilots/${id}`),
+    create: (data: any) => api.post('/pilots', data),
+}
+
+// Maintenance API
+export const maintenanceApi = {
+    list: (params?: { skip?: number; limit?: number }) =>
+        api.get('/maintenance', { params }),
+    create: (data: any) => api.post('/maintenance', data),
+}
+
 // Flights API
 export const flightsApi = {
-    listPlans: (params?: { skip?: number; limit?: number; status?: string }) =>
+    listPlans: (params?: { skip?: number; limit?: number; status?: string; drone_id?: string }) =>
         api.get('/flights/plans', { params }),
     getPlan: (id: string) => api.get(`/flights/plans/${id}`),
     createPlan: (data: any) => api.post('/flights/plans', data),

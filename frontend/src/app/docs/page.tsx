@@ -8,8 +8,8 @@ export default function DocsPage() {
             <header className="dgca-header text-white">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2">
-                        <Shield className="w-8 h-8" />
-                        <span className="text-xl font-bold">AeroSky India</span>
+                        <Shield className="w-8 h-8 text-amber-500" />
+                        <span className="text-xl font-bold tracking-tight text-white">Aerosys Aviation</span>
                     </Link>
                     <div className="flex gap-4">
                         <Link href="/login" className="px-4 py-2 hover:bg-white/10 rounded-lg">Login</Link>
@@ -22,7 +22,7 @@ export default function DocsPage() {
                     </Link>
                     <h1 className="text-4xl font-bold mb-4">Documentation</h1>
                     <p className="text-xl text-blue-100 max-w-2xl">
-                        Complete guide to the AeroSky India drone compliance platform
+                        Complete guide to the Aerosys Aviation drone compliance platform
                     </p>
                 </div>
             </header>
@@ -47,7 +47,7 @@ export default function DocsPage() {
                         {/* Overview */}
                         <Section id="overview" title="Overview" icon={Book}>
                             <p className="text-gray-600 mb-6">
-                                AeroSky India is a comprehensive drone compliance platform designed for the Indian aviation
+                                Aerosys Aviation is a comprehensive drone compliance platform designed for the Indian aviation
                                 regulatory framework. It provides end-to-end management of drone operations from type certification
                                 to flight logging, ensuring full compliance with DGCA regulations.
                             </p>
@@ -159,8 +159,8 @@ npm run dev`} />
 # Create account at neon.tech and get connection string
 
 # Option 2: Local PostgreSQL
-createdb AeroSky_india
-psql AeroSky_india < database/schema.sql`} />
+createdb aerosys_aviation
+psql aerosys_aviation < database/schema.sql`} />
                         </Section>
 
                         {/* Modules */}
@@ -306,7 +306,7 @@ psql AeroSky_india < database/schema.sql`} />
             {/* Footer */}
             <footer className="bg-gray-900 text-gray-400 py-8 mt-12">
                 <div className="container mx-auto px-6 text-center">
-                    <p>© 2026 AeroSky India. DGCA Compliance Platform.</p>
+                    <p>© 2026 Aerosys Aviation India Private Limited. All rights reserved.</p>
                 </div>
             </footer>
         </div>

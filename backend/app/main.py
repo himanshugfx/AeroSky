@@ -25,8 +25,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="AeroSky India",
-    description="Drone Compliance Platform - DGCA Regulatory Compliance Engine",
+    title="Aerosys Aviation India",
+    description="Drone Compliance & Aerial Intelligence Platform - Aerosys Aviation India Private Limited",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
