@@ -143,21 +143,18 @@ export default function DroneProfilePage() {
     const [printMode, setPrintMode] = useState<'one-time' | 'recurring'>('one-time');
 
     // Recurring Checklist State
-    const [personnelData, setPersonnelData] = useState<{ date: string; position: string; previous: string; new: string }[]>([
-        { date: '', position: '', previous: '', new: '' },
-        { date: '', position: '', previous: '', new: '' },
-        { date: '', position: '', previous: '', new: '' }
-    ]);
-    const [staffCompetenceData, setStaffCompetenceData] = useState<{ date: string; staff: string; examiner: string; result: string }[]>([
-        { date: '', staff: '', examiner: '', result: '' },
-        { date: '', staff: '', examiner: '', result: '' },
-        { date: '', staff: '', examiner: '', result: '' }
-    ]);
-    const [trainingRecords, setTrainingRecords] = useState<{ date: string; trainer: string; session: string; description: string; duration: string }[]>([
-        { date: '', trainer: '', session: '', description: '', duration: '' },
-        { date: '', trainer: '', session: '', description: '', duration: '' },
-        { date: '', trainer: '', session: '', description: '', duration: '' }
-    ]);
+    const [personnelData, setPersonnelData] = useState<{ date: string; position: string; previous: string; new: string }[]>([]);
+    const [newPersonnel, setNewPersonnel] = useState({ date: '', position: '', previous: '', new: '' });
+
+    const [staffCompetenceData, setStaffCompetenceData] = useState<{ date: string; staff: string; examiner: string; result: string }[]>([]);
+    const [newStaffCompetence, setNewStaffCompetence] = useState({ date: '', staff: '', examiner: '', result: '' });
+
+    const [trainingRecords, setTrainingRecords] = useState<{ date: string; trainer: string; session: string; description: string; duration: string }[]>([]);
+    const [newTrainingRecord, setNewTrainingRecord] = useState({ date: '', trainer: '', session: '', description: '', duration: '' });
+
+    const [equipmentMaintenance, setEquipmentMaintenance] = useState<{ date: string; equipment: string; serial: string; type: string; doneBy: string }[]>([]);
+    const [newEquipmentMaintenance, setNewEquipmentMaintenance] = useState({ date: '', equipment: '', serial: '', type: '', doneBy: '' });
+
     const [personnelReported, setPersonnelReported] = useState(false);
 
     useEffect(() => {
@@ -186,6 +183,9 @@ export default function DroneProfilePage() {
         }
         if (rData?.trainingRecords) {
             setTrainingRecords(rData.trainingRecords);
+        }
+        if (rData?.equipmentMaintenance) {
+            setEquipmentMaintenance(rData.equipmentMaintenance);
         }
     }, [drone]);
 
@@ -730,13 +730,12 @@ export default function DroneProfilePage() {
                     <div id="recurring-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
 
                         {/* 1. Personnel Management */}
-                        {/* 1. Personnel Management */}
                         <ChecklistItem
-                            title="2. Personnel Management"
+                            title="1. Personnel Management"
                             description="Record of personal competence"
                             icon={Users}
                             status={
-                                !personnelData.some(p => p.position || p.new)
+                                personnelData.length === 0
                                     ? { label: 'No Change', color: 'green' }
                                     : personnelReported
                                         ? { label: 'DGCA Notified', color: 'green' }
@@ -744,308 +743,275 @@ export default function DroneProfilePage() {
                             }
                         >
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left text-gray-400">
-                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
-                                        <tr>
-                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
-                                            <th className="px-4 py-3">Position</th>
-                                            <th className="px-4 py-3">Previous Personnel</th>
-                                            <th className="px-4 py-3 rounded-tr-lg">New Personnel</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {personnelData.map((row, index) => (
-                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="date"
-                                                        value={row.date}
-                                                        onChange={(e) => {
-                                                            const newData = [...personnelData];
-                                                            newData[index].date = e.target.value;
-                                                            setPersonnelData(newData);
-                                                            setPersonnelReported(false); // Reset on edit
-                                                        }}
-                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="text"
-                                                        value={row.position}
-                                                        onChange={(e) => {
-                                                            const newData = [...personnelData];
-                                                            newData[index].position = e.target.value;
-                                                            setPersonnelData(newData);
-                                                            setPersonnelReported(false); // Reset on edit
-                                                        }}
-                                                        placeholder="e.g. Pilot"
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <select
-                                                        value={row.previous}
-                                                        onChange={(e) => {
-                                                            const newData = [...personnelData];
-                                                            newData[index].previous = e.target.value;
-                                                            setPersonnelData(newData);
-                                                            setPersonnelReported(false); // Reset on edit
-                                                        }}
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
-                                                    >
-                                                        <option value="">Select...</option>
-                                                        {teamMembers.map(m => (
-                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <select
-                                                        value={row.new}
-                                                        onChange={(e) => {
-                                                            const newData = [...personnelData];
-                                                            newData[index].new = e.target.value;
-                                                            setPersonnelData(newData);
-                                                            setPersonnelReported(false); // Reset on edit
-                                                        }}
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
-                                                    >
-                                                        <option value="">Select...</option>
-                                                        {teamMembers.map(m => (
-                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
+                                {/* Saved List */}
+                                {personnelData.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Position</th>
+                                                <th className="px-4 py-3">Previous</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">New</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="mt-4 flex flex-col md:flex-row gap-4 justify-between items-center">
-                                    {personnelData.some(p => p.position || p.new) && !personnelReported ? (
-                                        <div className="flex items-center gap-4 bg-yellow-500/10 border border-yellow-500/20 p-3 rounded-lg w-full md:w-auto">
-                                            <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0" />
-                                            <div>
-                                                <p className="text-xs font-bold text-yellow-500">Changes detected</p>
-                                                <p className="text-[10px] text-gray-400">Please report these changes to DGCA.</p>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    setPersonnelReported(true);
-                                                    updateRecurringData(droneId, { personnel: personnelData, personnelReported: true });
-                                                }}
-                                                className="ml-auto bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border-2 border-transparent hover:border-yellow-300"
-                                            >
-                                                Reported to DGCA
-                                            </button>
-                                        </div>
-                                    ) : (<div></div>)}
+                                        </thead>
+                                        <tbody>
+                                            {personnelData.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2">{row.position}</td>
+                                                    <td className="px-4 py-2">{row.previous}</td>
+                                                    <td className="px-4 py-2">{row.new}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
 
-                                    <button
-                                        onClick={() => {
-                                            setPersonnelReported(false); // Reset reported status on edit save
-                                            updateRecurringData(droneId, { personnel: personnelData, personnelReported: false });
-                                        }}
-                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                                {/* Add New Form */}
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2 p-3 bg-white/5 rounded-lg">
+                                    <input
+                                        type="date"
+                                        value={newPersonnel.date}
+                                        onChange={(e) => setNewPersonnel({ ...newPersonnel, date: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                        placeholder="Date"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={newPersonnel.position}
+                                        onChange={(e) => setNewPersonnel({ ...newPersonnel, position: e.target.value })}
+                                        placeholder="Position"
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <select
+                                        value={newPersonnel.previous}
+                                        onChange={(e) => setNewPersonnel({ ...newPersonnel, previous: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
                                     >
-                                        Save Changes
-                                    </button>
+                                        <option value="">Prev. Personnel</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
+                                    <select
+                                        value={newPersonnel.new}
+                                        onChange={(e) => setNewPersonnel({ ...newPersonnel, new: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">New Personnel</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
                                 </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newPersonnel.position && newPersonnel.date) {
+                                            const newData = [...personnelData, newPersonnel];
+                                            setPersonnelData(newData);
+                                            setNewPersonnel({ date: '', position: '', previous: '', new: '' });
+                                            setPersonnelReported(false);
+                                            updateRecurringData(droneId, { personnel: newData, personnelReported: false });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Personnel Change
+                                </button>
+
+                                {personnelData.length > 0 && !personnelReported && (
+                                    <div className="mt-4 flex items-center justify-between bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
+                                        <span className="text-xs text-yellow-500 font-bold flex items-center gap-2">
+                                            <AlertTriangle className="w-4 h-4" /> Report changes to DGCA
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                setPersonnelReported(true);
+                                                updateRecurringData(droneId, { personnel: personnelData, personnelReported: true });
+                                            }}
+                                            className="bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg"
+                                        >
+                                            Mark Reported
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </ChecklistItem>
 
                         {/* 2. Staff Competence  */}
                         <ChecklistItem
-                            title="3. Staff Competence"
+                            title="2. Staff Competence"
                             description="Random checks of staff understanding and compliance"
                             icon={UserCheck}
-                            isComplete={staffCompetenceData.some(s => s.staff && s.result)}
-                        >
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left text-gray-400">
-                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
-                                        <tr>
-                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
-                                            <th className="px-4 py-3">Staff Examined</th>
-                                            <th className="px-4 py-3">Examined By</th>
-                                            <th className="px-4 py-3 rounded-tr-lg">Result</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {staffCompetenceData.map((row, index) => (
-                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="date"
-                                                        value={row.date}
-                                                        onChange={(e) => {
-                                                            const newData = [...staffCompetenceData];
-                                                            newData[index].date = e.target.value;
-                                                            setStaffCompetenceData(newData);
-                                                        }}
-                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <select
-                                                        value={row.staff}
-                                                        onChange={(e) => {
-                                                            const newData = [...staffCompetenceData];
-                                                            newData[index].staff = e.target.value;
-                                                            setStaffCompetenceData(newData);
-                                                        }}
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
-                                                    >
-                                                        <option value="">Select Staff...</option>
-                                                        {teamMembers.map(m => (
-                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <select
-                                                        value={row.examiner}
-                                                        onChange={(e) => {
-                                                            const newData = [...staffCompetenceData];
-                                                            newData[index].examiner = e.target.value;
-                                                            setStaffCompetenceData(newData);
-                                                        }}
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
-                                                    >
-                                                        <option value="">Select Examiner...</option>
-                                                        {teamMembers.map(m => (
-                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <select
-                                                        value={row.result}
-                                                        onChange={(e) => {
-                                                            const newData = [...staffCompetenceData];
-                                                            newData[index].result = e.target.value;
-                                                            setStaffCompetenceData(newData);
-                                                        }}
-                                                        className={`w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white ${row.result === 'Competent' ? 'text-green-500' : row.result === 'Needs Training' ? 'text-red-500' : 'text-white'
-                                                            }`}
-                                                    >
-                                                        <option value="">Select Result...</option>
-                                                        <option value="Competent">Staff is competent</option>
-                                                        <option value="Needs Training">Staff needs to be trained</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        onClick={() => updateRecurringData(droneId, { staffCompetence: staffCompetenceData })}
-                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </div>
-                        </ChecklistItem>
-
-                        {/* 4. Training Records */}
-                        <ChecklistItem
                             title="4. Training Record"
                             description="Training record of two years"
                             icon={GraduationCap}
-                            isComplete={trainingRecords.some(t => t.trainer && t.session)}
+                            isComplete={trainingRecords.length > 0}
                         >
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left text-gray-400">
-                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
-                                        <tr>
-                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
-                                            <th className="px-4 py-3">Trainer</th>
-                                            <th className="px-4 py-3">Session Name</th>
-                                            <th className="px-4 py-3">Description</th>
-                                            <th className="px-4 py-3 rounded-tr-lg">Duration</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {trainingRecords.map((row, index) => (
-                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="date"
-                                                        value={row.date}
-                                                        onChange={(e) => {
-                                                            const newData = [...trainingRecords];
-                                                            newData[index].date = e.target.value;
-                                                            setTrainingRecords(newData);
-                                                        }}
-                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="text"
-                                                        value={row.trainer}
-                                                        onChange={(e) => {
-                                                            const newData = [...trainingRecords];
-                                                            newData[index].trainer = e.target.value;
-                                                            setTrainingRecords(newData);
-                                                        }}
-                                                        placeholder="Trainer Name"
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="text"
-                                                        value={row.session}
-                                                        onChange={(e) => {
-                                                            const newData = [...trainingRecords];
-                                                            newData[index].session = e.target.value;
-                                                            setTrainingRecords(newData);
-                                                        }}
-                                                        placeholder="Session Name"
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="text"
-                                                        value={row.description}
-                                                        onChange={(e) => {
-                                                            const newData = [...trainingRecords];
-                                                            newData[index].description = e.target.value;
-                                                            setTrainingRecords(newData);
-                                                        }}
-                                                        placeholder="Topics covered..."
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="text"
-                                                        value={row.duration}
-                                                        onChange={(e) => {
-                                                            const newData = [...trainingRecords];
-                                                            newData[index].duration = e.target.value;
-                                                            setTrainingRecords(newData);
-                                                        }}
-                                                        placeholder="e.g. 2 hrs"
-                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
-                                                    />
-                                                </td>
+                                {trainingRecords.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Trainer</th>
+                                                <th className="px-4 py-3">Session</th>
+                                                <th className="px-4 py-3">Description</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Duration</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        onClick={() => updateRecurringData(droneId, { trainingRecords: trainingRecords })}
-                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-                                    >
-                                        Save Changes
-                                    </button>
+                                        </thead>
+                                        <tbody>
+                                            {trainingRecords.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2">{row.trainer}</td>
+                                                    <td className="px-4 py-2">{row.session}</td>
+                                                    <td className="px-4 py-2">{row.description}</td>
+                                                    <td className="px-4 py-2">{row.duration}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* Add New Form */}
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white/5 rounded-lg">
+                                    <input
+                                        type="date"
+                                        value={newTrainingRecord.date}
+                                        onChange={(e) => setNewTrainingRecord({ ...newTrainingRecord, date: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Trainer"
+                                        value={newTrainingRecord.trainer}
+                                        onChange={(e) => setNewTrainingRecord({ ...newTrainingRecord, trainer: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Session"
+                                        value={newTrainingRecord.session}
+                                        onChange={(e) => setNewTrainingRecord({ ...newTrainingRecord, session: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Desc..."
+                                        value={newTrainingRecord.description}
+                                        onChange={(e) => setNewTrainingRecord({ ...newTrainingRecord, description: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Duration"
+                                        value={newTrainingRecord.duration}
+                                        onChange={(e) => setNewTrainingRecord({ ...newTrainingRecord, duration: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
                                 </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newTrainingRecord.date && newTrainingRecord.session) {
+                                            const newData = [...trainingRecords, newTrainingRecord];
+                                            setTrainingRecords(newData);
+                                            setNewTrainingRecord({ date: '', trainer: '', session: '', description: '', duration: '' });
+                                            updateRecurringData(droneId, { trainingRecords: newData });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Training Record
+                                </button>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 5. Equipment Maintenance */}
+                        <ChecklistItem
+                            title="5. Equipment Maintenance"
+                            description="Calibration and service record of equipments"
+                            icon={Wrench}
+                            isComplete={equipmentMaintenance.length > 0}
+                        >
+                            <div className="overflow-x-auto">
+                                {equipmentMaintenance.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Equipment</th>
+                                                <th className="px-4 py-3">Serial No</th>
+                                                <th className="px-4 py-3">Type</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Done By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {equipmentMaintenance.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2">{row.equipment}</td>
+                                                    <td className="px-4 py-2">{row.serial}</td>
+                                                    <td className="px-4 py-2">{row.type}</td>
+                                                    <td className="px-4 py-2">{row.doneBy}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* Add New Form */}
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white/5 rounded-lg">
+                                    <input
+                                        type="date"
+                                        value={newEquipmentMaintenance.date}
+                                        onChange={(e) => setNewEquipmentMaintenance({ ...newEquipmentMaintenance, date: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Equipment Name"
+                                        value={newEquipmentMaintenance.equipment}
+                                        onChange={(e) => setNewEquipmentMaintenance({ ...newEquipmentMaintenance, equipment: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Serial No"
+                                        value={newEquipmentMaintenance.serial}
+                                        onChange={(e) => setNewEquipmentMaintenance({ ...newEquipmentMaintenance, serial: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                    />
+                                    <select
+                                        value={newEquipmentMaintenance.type}
+                                        onChange={(e) => setNewEquipmentMaintenance({ ...newEquipmentMaintenance, type: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Type</option>
+                                        <option value="Calibration">Calibration</option>
+                                        <option value="Service">Service</option>
+                                    </select>
+                                    <select
+                                        value={newEquipmentMaintenance.doneBy}
+                                        onChange={(e) => setNewEquipmentMaintenance({ ...newEquipmentMaintenance, doneBy: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Done By</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newEquipmentMaintenance.date && newEquipmentMaintenance.equipment) {
+                                            const newData = [...equipmentMaintenance, newEquipmentMaintenance];
+                                            setEquipmentMaintenance(newData);
+                                            setNewEquipmentMaintenance({ date: '', equipment: '', serial: '', type: '', doneBy: '' });
+                                            updateRecurringData(droneId, { equipmentMaintenance: newData });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Equipment Record
+                                </button>
                             </div>
                         </ChecklistItem>
 
@@ -1268,6 +1234,40 @@ export default function DroneProfilePage() {
                                     ) : (
                                         <tr>
                                             <td colSpan={5} className="border p-2 text-center text-gray-500 italic">No training records found.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+
+                        {/* Equipment Maintenance Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Equipment Maintenance</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/4">Equipment</th>
+                                        <th className="border p-2 w-1/4">Serial No</th>
+                                        <th className="border p-2 w-1/6">Type</th>
+                                        <th className="border p-2 w-1/6">Done By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {equipmentMaintenance.length > 0 ? (
+                                        equipmentMaintenance.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date}</td>
+                                                <td className="border p-2">{row.equipment}</td>
+                                                <td className="border p-2 font-mono">{row.serial}</td>
+                                                <td className="border p-2">{row.type}</td>
+                                                <td className="border p-2">{row.doneBy}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="border p-2 text-center text-gray-500 italic">No equipment maintenance records.</td>
                                         </tr>
                                     )}
                                 </tbody>
