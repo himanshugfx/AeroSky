@@ -31,7 +31,7 @@ import Link from "next/link";
 interface ChecklistItemProps {
     title: string;
     description: string;
-    icon: LucideIcon;
+    icon: React.ElementType;
     isComplete?: boolean;
     status?: { label: string; color: 'green' | 'yellow' | 'red' };
     children: React.ReactNode;
