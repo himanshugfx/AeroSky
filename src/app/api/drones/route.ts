@@ -51,6 +51,7 @@ export async function GET() {
                     serialNumber: u.serialNumber,
                     uin: u.uin,
                 })),
+                recurringData: drone.recurringData,
             };
         });
 
