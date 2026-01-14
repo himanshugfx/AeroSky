@@ -17,6 +17,7 @@ import {
     ChevronDown,
     ChevronUp,
     Check,
+    AlertTriangle,
     Plane,
 } from "lucide-react";
 import { useComplianceStore } from "@/lib/complianceStore";
@@ -32,45 +33,79 @@ interface ChecklistItemProps {
     defaultOpen?: boolean;
 }
 
+interface ChecklistItemProps {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    isComplete?: boolean;
+    status?: { label: string; color: 'green' | 'yellow' | 'red' };
+    children: React.ReactNode;
+    defaultOpen?: boolean;
+}
+
 function ChecklistItem({
     title,
     description,
     icon: Icon,
     isComplete,
+    status,
     children,
     defaultOpen = false,
 }: ChecklistItemProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
+
+    // Determine status style
+    let statusBg = "bg-orange-500/20";
+    let statusText = "text-orange-500";
+    let statusLabel = "Pending";
+    let statusIcon = null;
+
+    if (status) {
+        if (status.color === 'green') {
+            statusBg = "bg-green-500/20";
+            statusText = "text-green-500";
+            statusIcon = <Check className="w-2.5 h-2.5" />;
+        } else if (status.color === 'yellow') {
+            statusBg = "bg-yellow-500/20";
+            statusText = "text-yellow-500";
+            statusIcon = <AlertTriangle className="w-2.5 h-2.5" />;
+        } else {
+            statusBg = "bg-red-500/20";
+            statusText = "text-red-500";
+        }
+        statusLabel = status.label;
+    } else if (isComplete) {
+        statusBg = "bg-green-500/20";
+        statusText = "text-green-500";
+        statusLabel = "Done";
+        statusIcon = <Check className="w-2.5 h-2.5" />;
+    }
 
     return (
         <div className="bg-[#0f0f12] border border-white/5 rounded-xl overflow-hidden">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full p-4 flex items-center gap-3 text-left hover:bg-white/[0.02] transition-colors"
+                style={{
+                    borderLeft: `4px solid ${status?.color === 'yellow' ? '#EAB308' : status?.color === 'green' || isComplete ? '#22C55E' : 'transparent'}`
+                }}
             >
                 <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isComplete ? "bg-green-500/20" : "bg-white/5"
-                        }`}
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${statusBg}`}
                 >
-                    <Icon className={`w-5 h-5 ${isComplete ? "text-green-500" : "text-gray-500"}`} />
+                    <Icon className={`w-5 h-5 ${statusText}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-white text-sm">{title}</h3>
-                        {isComplete ? (
-                            <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-500">
-                                <Check className="w-2.5 h-2.5" /> Done
-                            </span>
-                        ) : (
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-500">
-                                Pending
-                            </span>
-                        )}
+                        <span className={`flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${statusBg} ${statusText}`}>
+                            {statusIcon} {statusLabel}
+                        </span>
                     </div>
                     <p className="text-xs text-gray-500 truncate">{description}</p>
                 </div>
                 {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" />
+                    <Check className="w-4 h-4 text-gray-500 shrink-0 opacity-0" /> /* Spacer to keep alignment */
                 ) : (
                     <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />
                 )}
@@ -117,6 +152,7 @@ export default function DroneProfilePage() {
         { date: '', staff: '', examiner: '', result: '' },
         { date: '', staff: '', examiner: '', result: '' }
     ]);
+    const [personnelReported, setPersonnelReported] = useState(false);
 
     useEffect(() => {
         Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors()]).finally(() =>
@@ -135,6 +171,9 @@ export default function DroneProfilePage() {
         const rData = (drone as any)?.recurringData;
         if (rData?.personnel) {
             setPersonnelData(rData.personnel);
+        }
+        if (rData?.personnelReported) {
+            setPersonnelReported(rData.personnelReported);
         }
         if (rData?.staffCompetence) {
             setStaffCompetenceData(rData.staffCompetence);
@@ -682,11 +721,18 @@ export default function DroneProfilePage() {
                     <div id="recurring-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
 
                         {/* 1. Personnel Management */}
+                        {/* 1. Personnel Management */}
                         <ChecklistItem
                             title="2. Personnel Management"
                             description="Record of personal competence"
                             icon={Users}
-                            isComplete={personnelData.some(p => p.position && p.new)}
+                            status={
+                                !personnelData.some(p => p.position || p.new)
+                                    ? { label: 'No Change', color: 'green' }
+                                    : personnelReported
+                                        ? { label: 'DGCA Notified', color: 'green' }
+                                        : { label: 'Report to DGCA', color: 'yellow' }
+                            }
                         >
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left text-gray-400">
@@ -709,6 +755,7 @@ export default function DroneProfilePage() {
                                                             const newData = [...personnelData];
                                                             newData[index].date = e.target.value;
                                                             setPersonnelData(newData);
+                                                            setPersonnelReported(false); // Reset on edit
                                                         }}
                                                         className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
                                                     />
@@ -721,6 +768,7 @@ export default function DroneProfilePage() {
                                                             const newData = [...personnelData];
                                                             newData[index].position = e.target.value;
                                                             setPersonnelData(newData);
+                                                            setPersonnelReported(false); // Reset on edit
                                                         }}
                                                         placeholder="e.g. Pilot"
                                                         className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
@@ -733,6 +781,7 @@ export default function DroneProfilePage() {
                                                             const newData = [...personnelData];
                                                             newData[index].previous = e.target.value;
                                                             setPersonnelData(newData);
+                                                            setPersonnelReported(false); // Reset on edit
                                                         }}
                                                         className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
                                                     >
@@ -749,6 +798,7 @@ export default function DroneProfilePage() {
                                                             const newData = [...personnelData];
                                                             newData[index].new = e.target.value;
                                                             setPersonnelData(newData);
+                                                            setPersonnelReported(false); // Reset on edit
                                                         }}
                                                         className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
                                                     >
@@ -762,9 +812,31 @@ export default function DroneProfilePage() {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="mt-4 flex justify-end">
+                                <div className="mt-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+                                    {personnelData.some(p => p.position || p.new) && !personnelReported ? (
+                                        <div className="flex items-center gap-4 bg-yellow-500/10 border border-yellow-500/20 p-3 rounded-lg w-full md:w-auto">
+                                            <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0" />
+                                            <div>
+                                                <p className="text-xs font-bold text-yellow-500">Changes detected</p>
+                                                <p className="text-[10px] text-gray-400">Please report these changes to DGCA.</p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setPersonnelReported(true);
+                                                    updateRecurringData(droneId, { personnel: personnelData, personnelReported: true });
+                                                }}
+                                                className="ml-auto bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border-2 border-transparent hover:border-yellow-300"
+                                            >
+                                                Reported to DGCA
+                                            </button>
+                                        </div>
+                                    ) : (<div></div>)}
+
                                     <button
-                                        onClick={() => updateRecurringData(droneId, { personnel: personnelData })}
+                                        onClick={() => {
+                                            setPersonnelReported(false); // Reset reported status on edit save
+                                            updateRecurringData(droneId, { personnel: personnelData, personnelReported: false });
+                                        }}
                                         className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
                                     >
                                         Save Changes
