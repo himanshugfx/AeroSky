@@ -98,12 +98,20 @@ export default function DroneProfilePage() {
         assignAccountableManager,
         updateWebPortal,
         updateManufacturedUnits,
+        updateRecurringData,
     } = useComplianceStore();
 
     const [loading, setLoading] = useState(true);
     const [webPortalLink, setWebPortalLink] = useState("");
     const [otherLabel, setOtherLabel] = useState("");
     const [printMode, setPrintMode] = useState<'one-time' | 'recurring'>('one-time');
+
+    // Recurring Checklist State
+    const [personnelData, setPersonnelData] = useState<{ position: string; previous: string; new: string }[]>([
+        { position: '', previous: '', new: '' },
+        { position: '', previous: '', new: '' },
+        { position: '', previous: '', new: '' }
+    ]);
 
     useEffect(() => {
         Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors()]).finally(() =>
@@ -116,6 +124,12 @@ export default function DroneProfilePage() {
     useEffect(() => {
         if (drone?.uploads.webPortalLink) {
             setWebPortalLink(drone.uploads.webPortalLink);
+        }
+
+        // Load recurring data if exists
+        const rData = (drone as any)?.recurringData;
+        if (rData?.personnel) {
+            setPersonnelData(rData.personnel);
         }
     }, [drone]);
 
@@ -658,9 +672,85 @@ export default function DroneProfilePage() {
                     </button>
 
                     <div id="recurring-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
-                        <div className="p-8 text-center border-2 border-dashed border-white/10 rounded-xl">
-                            <p className="text-gray-500 italic">Recurring checklist items will appear here...</p>
-                        </div>
+
+                        {/* 1. Personnel Management */}
+                        <ChecklistItem
+                            title="2. Personnel Management"
+                            description="Record of personal competence"
+                            icon={Users}
+                            isComplete={personnelData.some(p => p.position && p.new)}
+                        >
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left text-gray-400">
+                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                        <tr>
+                                            <th className="px-4 py-3 rounded-tl-lg">Position</th>
+                                            <th className="px-4 py-3">Previous Personnel</th>
+                                            <th className="px-4 py-3 rounded-tr-lg">New Personnel</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {personnelData.map((row, index) => (
+                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="text"
+                                                        value={row.position}
+                                                        onChange={(e) => {
+                                                            const newData = [...personnelData];
+                                                            newData[index].position = e.target.value;
+                                                            setPersonnelData(newData);
+                                                        }}
+                                                        placeholder="e.g. Pilot"
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <select
+                                                        value={row.previous}
+                                                        onChange={(e) => {
+                                                            const newData = [...personnelData];
+                                                            newData[index].previous = e.target.value;
+                                                            setPersonnelData(newData);
+                                                        }}
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
+                                                    >
+                                                        <option value="">Select...</option>
+                                                        {teamMembers.map(m => (
+                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <select
+                                                        value={row.new}
+                                                        onChange={(e) => {
+                                                            const newData = [...personnelData];
+                                                            newData[index].new = e.target.value;
+                                                            setPersonnelData(newData);
+                                                        }}
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
+                                                    >
+                                                        <option value="">Select...</option>
+                                                        {teamMembers.map(m => (
+                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        onClick={() => updateRecurringData(droneId, { personnel: personnelData })}
+                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </ChecklistItem>
                     </div>
                 </div>
             </div>
@@ -780,11 +870,44 @@ export default function DroneProfilePage() {
                         </div>
                     </>
                 ) : (
-                    <div className="text-center p-12">
-                        <h1 className="text-3xl font-bold uppercase tracking-wider mb-2">{drone.modelName}</h1>
-                        <h2 className="text-xl text-gray-600 mb-8">Recurring Compliance Report</h2>
-                        <div className="border-t-2 border-b-2 border-gray-200 py-12">
-                            <p className="text-gray-400 italic">Recurring checklist data is not yet available.</p>
+                    <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-8 border-b-2 border-black pb-4">
+                            <h1 className="text-3xl font-bold uppercase tracking-wider">{drone.modelName}</h1>
+                            <p className="text-sm text-gray-600">Recurring Compliance Report</p>
+                            <p className="text-xs text-gray-400 mt-1">Generated: {new Date().toLocaleDateString()}</p>
+                        </div>
+
+                        {/* Personnel Management Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">2. Personnel Management</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/3">Position</th>
+                                        <th className="border p-2 w-1/3">Previous Personnel</th>
+                                        <th className="border p-2 w-1/3">New Personnel</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {personnelData.some(p => p.position || p.previous || p.new) ? (
+                                        personnelData.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2 font-semibold min-h-[2rem]">{row.position || '-'}</td>
+                                                <td className="border p-2">{row.previous || '-'}</td>
+                                                <td className="border p-2">{row.new || '-'}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={3} className="border p-2 text-center text-gray-500 italic">No personnel changes recorded.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        <div className="border-t-2 border-gray-200 py-8 text-center">
+                            <p className="text-xs text-gray-400">End of Recurring Compliance Report</p>
                         </div>
                     </div>
                 )}

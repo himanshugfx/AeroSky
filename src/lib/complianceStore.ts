@@ -82,6 +82,7 @@ interface ComplianceState {
     assignAccountableManager: (droneId: string, managerId: string) => Promise<void>;
     updateWebPortal: (droneId: string, link: string) => Promise<void>;
     updateManufacturedUnits: (droneId: string, units: ManufacturedUnit[]) => Promise<void>;
+    updateRecurringData: (droneId: string, data: any) => Promise<void>; // Generic for now
 }
 
 export const useComplianceStore = create<ComplianceState>((set, get) => ({
@@ -309,4 +310,33 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
             console.error('Failed to update manufactured units:', error);
         }
     },
+
+    updateRecurringData: async (droneId, data) => {
+        try {
+            // Retrieve existing data first to merge (or handle partial updates)
+            const existingDrone = get().drones.find(d => d.id === droneId);
+            const currentData = (existingDrone as any)?.recurringData || {};
+
+            // Simple shallow merge for now, or total replacement depending on usage.
+            // Given the requirements, let's treat 'data' as a specific key update or full object.
+            // Ideally we should have structure but since it's "Json", we need care.
+            // Let's assume 'data' is a partial object to merge.
+            const newData = { ...currentData, ...data };
+
+            await fetch(`/api/drones/${droneId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recurringData: newData }),
+            });
+
+            set((state) => ({
+                drones: state.drones.map((d) =>
+                    d.id === droneId ? { ...d, recurringData: newData } : d
+                ),
+            }));
+
+        } catch (error) {
+            console.error('Failed to update recurring data:', error);
+        }
+    }
 }));

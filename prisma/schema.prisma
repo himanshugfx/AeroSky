@@ -54,6 +54,7 @@ model Drone {
   accountableManager TeamMember?   @relation("AccountableManager", fields: [accountableManagerId], references: [id])
   uploads            DroneUpload[]
   manufacturedUnits  ManufacturedUnit[]
+  recurringData      Json?            @map("recurring_data")
 
   @@map("drones")
 }
