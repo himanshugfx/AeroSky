@@ -112,6 +112,11 @@ export default function DroneProfilePage() {
         { position: '', previous: '', new: '' },
         { position: '', previous: '', new: '' }
     ]);
+    const [staffCompetenceData, setStaffCompetenceData] = useState<{ date: string; staff: string; examiner: string; result: string }[]>([
+        { date: '', staff: '', examiner: '', result: '' },
+        { date: '', staff: '', examiner: '', result: '' },
+        { date: '', staff: '', examiner: '', result: '' }
+    ]);
 
     useEffect(() => {
         Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors()]).finally(() =>
@@ -130,6 +135,9 @@ export default function DroneProfilePage() {
         const rData = (drone as any)?.recurringData;
         if (rData?.personnel) {
             setPersonnelData(rData.personnel);
+        }
+        if (rData?.staffCompetence) {
+            setStaffCompetenceData(rData.staffCompetence);
         }
     }, [drone]);
 
@@ -751,6 +759,101 @@ export default function DroneProfilePage() {
                                 </div>
                             </div>
                         </ChecklistItem>
+
+                        {/* 2. Staff Competence  */}
+                        <ChecklistItem
+                            title="3. Staff Competence"
+                            description="Random checks of staff understanding and compliance"
+                            icon={UserCheck}
+                            isComplete={staffCompetenceData.some(s => s.staff && s.result)}
+                        >
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left text-gray-400">
+                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                        <tr>
+                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                            <th className="px-4 py-3">Staff Examined</th>
+                                            <th className="px-4 py-3">Examined By</th>
+                                            <th className="px-4 py-3 rounded-tr-lg">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {staffCompetenceData.map((row, index) => (
+                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="date"
+                                                        value={row.date}
+                                                        onChange={(e) => {
+                                                            const newData = [...staffCompetenceData];
+                                                            newData[index].date = e.target.value;
+                                                            setStaffCompetenceData(newData);
+                                                        }}
+                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <select
+                                                        value={row.staff}
+                                                        onChange={(e) => {
+                                                            const newData = [...staffCompetenceData];
+                                                            newData[index].staff = e.target.value;
+                                                            setStaffCompetenceData(newData);
+                                                        }}
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
+                                                    >
+                                                        <option value="">Select Staff...</option>
+                                                        {teamMembers.map(m => (
+                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <select
+                                                        value={row.examiner}
+                                                        onChange={(e) => {
+                                                            const newData = [...staffCompetenceData];
+                                                            newData[index].examiner = e.target.value;
+                                                            setStaffCompetenceData(newData);
+                                                        }}
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white"
+                                                    >
+                                                        <option value="">Select Examiner...</option>
+                                                        {teamMembers.map(m => (
+                                                            <option key={m.id} value={m.name}>{m.name} ({m.accessId})</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <select
+                                                        value={row.result}
+                                                        onChange={(e) => {
+                                                            const newData = [...staffCompetenceData];
+                                                            newData[index].result = e.target.value;
+                                                            setStaffCompetenceData(newData);
+                                                        }}
+                                                        className={`w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none py-1 [&>option]:bg-[#0f0f12] [&>option]:text-white ${row.result === 'Competent' ? 'text-green-500' : row.result === 'Needs Training' ? 'text-red-500' : 'text-white'
+                                                            }`}
+                                                    >
+                                                        <option value="">Select Result...</option>
+                                                        <option value="Competent">Staff is competent</option>
+                                                        <option value="Needs Training">Staff needs to be trained</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        onClick={() => updateRecurringData(droneId, { staffCompetence: staffCompetenceData })}
+                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </ChecklistItem>
                     </div>
                 </div>
             </div>
@@ -900,6 +1003,41 @@ export default function DroneProfilePage() {
                                     ) : (
                                         <tr>
                                             <td colSpan={3} className="border p-2 text-center text-gray-500 italic">No personnel changes recorded.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* Staff Competence Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">3. Staff Competence</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/4">Staff Examined</th>
+                                        <th className="border p-2 w-1/4">Examined By</th>
+                                        <th className="border p-2 w-1/3">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {staffCompetenceData.some(s => s.staff || s.result) ? (
+                                        staffCompetenceData.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date || '-'}</td>
+                                                <td className="border p-2">{row.staff || '-'}</td>
+                                                <td className="border p-2">{row.examiner || '-'}</td>
+                                                <td className={`border p-2 font-semibold ${row.result === 'Competent' ? 'text-green-700' :
+                                                        row.result === 'Needs Training' ? 'text-red-700' : ''
+                                                    }`}>
+                                                    {row.result || '-'}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No staff competence checks recorded.</td>
                                         </tr>
                                     )}
                                 </tbody>
