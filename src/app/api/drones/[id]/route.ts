@@ -57,6 +57,7 @@ export async function GET(
                 serialNumber: u.serialNumber,
                 uin: u.uin,
             })),
+            recurringData: drone.recurringData,
         });
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch drone" }, { status: 500 });
@@ -71,7 +72,7 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { modelName, image, accountableManagerId, webPortalLink, manufacturedUnits } = body;
+        const { modelName, image, accountableManagerId, webPortalLink, manufacturedUnits, recurringData } = body;
 
         const drone = await prisma.drone.update({
             where: { id },
@@ -81,6 +82,7 @@ export async function PUT(
                 image,
                 accountableManagerId,
                 webPortalLink,
+                recurringData,
                 ...(manufacturedUnits && {
                     manufacturedUnits: {
                         deleteMany: {},
