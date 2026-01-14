@@ -76,7 +76,7 @@ export const api = axios.create({
 // Auth API
 export const authApi = {
     login: (email: string, password: string) => {
-        useAuthStore.getState().setTokens('mock-access-token', 'mock-refresh-token')
+        useAuthStore.getState().setAuth(MOCK_USER, 'mock-access-token')
         return mockResolve({ access_token: 'mock-access-token', refresh_token: 'mock-refresh-token', token_type: 'bearer' })
     },
     register: (data: any) => mockResolve(MOCK_USER),
