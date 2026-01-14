@@ -514,58 +514,60 @@ export default function DroneProfilePage() {
                             </p>
                         )}
                     </div>
-                    {/* 10. Manufactured Units */}
-                    <ChecklistItem
-                        title="10. Manufactured Units"
-                        description="List of individual drone serial numbers"
-                        icon={Wrench}
-                        isComplete={checks.manufacturedUnits}
-                    >
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                    Serial Numbers (Comma Separated)
-                                </label>
-                                {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
-                                    <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
-                                        {drone.manufacturedUnits.length} Units Registered
-                                    </span>
-                                )}
-                            </div>
-                            <textarea
-                                value={manufacturedUnitsInput}
-                                onChange={(e) => setManufacturedUnitsInput(e.target.value)}
-                                placeholder="SN-001, SN-002, SN-003..."
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all h-24 resize-none"
-                            />
-                            <button
-                                onClick={() => {
-                                    const units = manufacturedUnitsInput
-                                        .split(",")
-                                        .map((s) => s.trim())
-                                        .filter(Boolean);
-                                    updateManufacturedUnits(droneId, units);
-                                }}
-                                className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-xl transition-colors w-full sm:w-auto"
-                            >
-                                Update Manufactured Units
-                            </button>
+                </ChecklistItem>
 
-                            {/* Visual representation of current units */}
+                {/* 10. Manufactured Units */}
+                <ChecklistItem
+                    title="10. Manufactured Units"
+                    description="List of individual drone serial numbers"
+                    icon={Wrench}
+                    isComplete={checks.manufacturedUnits}
+                >
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Serial Numbers (Comma Separated)
+                            </label>
                             {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
-                                <div className="flex flex-wrap gap-2 pt-2">
-                                    {drone.manufacturedUnits.map((sn, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-[10px] font-mono text-gray-400"
-                                        >
-                                            {sn}
-                                        </span>
-                                    ))}
-                                </div>
+                                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
+                                    {drone.manufacturedUnits.length} Units Registered
+                                </span>
                             )}
                         </div>
-                    </ChecklistItem>
+                        <textarea
+                            value={manufacturedUnitsInput}
+                            onChange={(e) => setManufacturedUnitsInput(e.target.value)}
+                            placeholder="SN-001, SN-002, SN-003..."
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all h-24 resize-none"
+                        />
+                        <button
+                            onClick={() => {
+                                const units = manufacturedUnitsInput
+                                    .split(",")
+                                    .map((s) => s.trim())
+                                    .filter(Boolean);
+                                updateManufacturedUnits(droneId, units);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-xl transition-colors w-full sm:w-auto"
+                        >
+                            Update Manufactured Units
+                        </button>
+
+                        {/* Visual representation of current units */}
+                        {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-2">
+                                {drone.manufacturedUnits.map((sn, idx) => (
+                                    <span
+                                        key={idx}
+                                        className="bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-[10px] font-mono text-gray-400"
+                                    >
+                                        {sn}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </ChecklistItem>
             </div>
         </div>
     );
