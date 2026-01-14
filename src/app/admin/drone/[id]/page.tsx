@@ -846,9 +846,6 @@ export default function DroneProfilePage() {
 
                         {/* 2. Staff Competence  */}
                         <ChecklistItem
-                            title="2. Staff Competence"
-                            description="Random checks of staff understanding and compliance"
-                            icon={UserCheck}
                             title="4. Training Record"
                             description="Training record of two years"
                             icon={GraduationCap}
