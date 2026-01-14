@@ -103,6 +103,7 @@ export default function DroneProfilePage() {
     const [loading, setLoading] = useState(true);
     const [webPortalLink, setWebPortalLink] = useState("");
     const [otherLabel, setOtherLabel] = useState("");
+    const [printMode, setPrintMode] = useState<'one-time' | 'recurring'>('one-time');
 
     useEffect(() => {
         Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors()]).finally(() =>
@@ -160,8 +161,9 @@ export default function DroneProfilePage() {
 
     const completedCount = Object.values(checks).filter(Boolean).length;
 
-    const handleDownloadPDF = () => {
-        window.print();
+    const handleDownloadPDF = (mode: 'one-time' | 'recurring' = 'one-time') => {
+        setPrintMode(mode);
+        setTimeout(() => window.print(), 100);
     };
 
     return (
@@ -223,7 +225,7 @@ export default function DroneProfilePage() {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    handleDownloadPDF();
+                                    handleDownloadPDF('one-time');
                                 }}
                                 className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] text-sm"
                             >
@@ -618,119 +620,174 @@ export default function DroneProfilePage() {
                         </ChecklistItem>
                     </div>
                 </div>
+
+                {/* Recurring Checklist Group */}
+                <div className="bg-[#0f0f12] border border-white/5 rounded-xl overflow-hidden mb-6">
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById('recurring-checklist-content');
+                            const icon = document.getElementById('recurring-checklist-icon');
+                            if (el) el.classList.toggle('hidden');
+                            if (icon) icon.classList.toggle('rotate-180');
+                        }}
+                        className="w-full p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                                <Check className="w-5 h-5 text-purple-500" />
+                            </div>
+                            <div className="text-left">
+                                <h2 className="text-lg font-bold text-white">Recurring Checklist</h2>
+                                <p className="text-sm text-gray-500">Periodic maintenance and compliance checks</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDownloadPDF('recurring');
+                                }}
+                                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] text-sm"
+                            >
+                                <Download className="w-4 h-4" />
+                                Download PDF
+                            </button>
+                            <ChevronDown id="recurring-checklist-icon" className="w-5 h-5 text-gray-500 transition-transform duration-300" />
+                        </div>
+                    </button>
+
+                    <div id="recurring-checklist-content" className="p-4 border-t border-white/5 space-y-2">
+                        <div className="p-8 text-center border-2 border-dashed border-white/10 rounded-xl">
+                            <p className="text-gray-500 italic">Recurring checklist items will appear here...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Print Only View */}
             <div className="hidden print:block text-black bg-white p-6">
-                <div className="text-center mb-8 border-b-2 border-black pb-4">
-                    <h1 className="text-3xl font-bold uppercase tracking-wider">{drone.modelName}</h1>
-                    <p className="text-sm text-gray-600">DGCA Compliance Checklist Report</p>
-                    <p className="text-xs text-gray-400 mt-1">Generated: {new Date().toLocaleDateString()}</p>
-                </div>
+                {printMode === 'one-time' ? (
+                    <>
+                        <div className="text-center mb-8 border-b-2 border-black pb-4">
+                            <h1 className="text-3xl font-bold uppercase tracking-wider">{drone.modelName}</h1>
+                            <p className="text-sm text-gray-600">DGCA Compliance Checklist Report</p>
+                            <p className="text-xs text-gray-400 mt-1">Generated: {new Date().toLocaleDateString()}</p>
+                        </div>
 
-                <div className="space-y-6">
-                    {/* Organization */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">1. Organizational Structure</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            {teamMembers.map((m) => (
-                                <div key={m.id} className="border p-2 rounded">
-                                    <p className="font-bold">{m.name}</p>
-                                    <p className="text-sm">{m.position}</p>
-                                    <p className="text-xs text-gray-500">{m.email} | {m.phone}</p>
+                        <div className="space-y-6">
+                            {/* Organization */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">1. Organizational Structure</h2>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {teamMembers.map((m) => (
+                                        <div key={m.id} className="border p-2 rounded">
+                                            <p className="font-bold">{m.name}</p>
+                                            <p className="text-sm">{m.position}</p>
+                                            <p className="text-xs text-gray-500">{m.email} | {m.phone}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </section>
+
+                            {/* Accountable Manager */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">2. Leadership & Accountability</h2>
+                                <p className="text-sm">
+                                    <span className="font-bold">Accountable Manager:</span> {accountableManager?.name || "Not Assigned"}
+                                </p>
+                            </section>
+
+                            {/* Documents */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">3. Documentation</h2>
+                                <ul className="list-disc pl-5 text-sm space-y-1">
+                                    <li>Training Manual: {uploads.trainingManual ? "Uploaded" : "Pending"}</li>
+                                    <li>System Design: {uploads.systemDesign ? "Uploaded" : "Pending"}</li>
+                                    <li>Web Portal: {uploads.webPortalLink || "Not Set"}</li>
+                                </ul>
+                            </section>
+
+                            {/* Infrastructure Images */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">4. Infrastructure Photos</h2>
+
+                                <div className="mb-4">
+                                    <h3 className="font-bold text-sm mb-2">Manufacturing Facility</h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {uploads.infrastructureManufacturing.map((img: string, i: number) => (
+                                            <img key={i} src={img} className="w-full h-32 object-cover border" alt="Manufacturing" />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <h3 className="font-bold text-sm mb-2">Testing Facility</h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {uploads.infrastructureTesting.map((img: string, i: number) => (
+                                            <img key={i} src={img} className="w-full h-32 object-cover border" alt="Testing" />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="mb-4">
+                                    <h3 className="font-bold text-sm mb-2">Office</h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {uploads.infrastructureOffice.map((img: string, i: number) => (
+                                            <img key={i} src={img} className="w-full h-32 object-cover border" alt="Office" />
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Regulatory Display */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Regulatory Diplay & Security</h2>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {uploads.regulatoryDisplay.map((img: string, i: number) => (
+                                        <img key={i} src={img} className="w-full h-32 object-cover border" alt="Regulatory" />
+                                    ))}
+                                    {uploads.hardwareSecurity.map((img: string, i: number) => (
+                                        <img key={i} src={img} className="w-full h-32 object-cover border" alt="Security" />
+                                    ))}
+                                </div>
+                            </section>
+
+                            {/* Units */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Manufactured Units</h2>
+                                <table className="w-full text-sm text-left border">
+                                    <thead className="bg-gray-100 uppercase text-xs">
+                                        <tr>
+                                            <th className="p-2 border">Serial Number</th>
+                                            <th className="p-2 border">UIN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {drone.manufacturedUnits?.map((unit, i) => (
+                                            <tr key={i} className="border-b">
+                                                <td className="p-2 border font-mono">{unit.serialNumber}</td>
+                                                <td className="p-2 border font-mono">{unit.uin}</td>
+                                            </tr>
+                                        ))}
+                                        {(!drone.manufacturedUnits || drone.manufacturedUnits.length === 0) && (
+                                            <tr>
+                                                <td colSpan={2} className="p-2 text-center text-gray-500">No units registered</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </section>
                         </div>
-                    </section>
-
-                    {/* Accountable Manager */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">2. Leadership & Accountability</h2>
-                        <p className="text-sm">
-                            <span className="font-bold">Accountable Manager:</span> {accountableManager?.name || "Not Assigned"}
-                        </p>
-                    </section>
-
-                    {/* Documents */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">3. Documentation</h2>
-                        <ul className="list-disc pl-5 text-sm space-y-1">
-                            <li>Training Manual: {uploads.trainingManual ? "Uploaded" : "Pending"}</li>
-                            <li>System Design: {uploads.systemDesign ? "Uploaded" : "Pending"}</li>
-                            <li>Web Portal: {uploads.webPortalLink || "Not Set"}</li>
-                        </ul>
-                    </section>
-
-                    {/* Infrastructure Images */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">4. Infrastructure Photos</h2>
-
-                        <div className="mb-4">
-                            <h3 className="font-bold text-sm mb-2">Manufacturing Facility</h3>
-                            <div className="grid grid-cols-3 gap-2">
-                                {uploads.infrastructureManufacturing.map((img: string, i: number) => (
-                                    <img key={i} src={img} className="w-full h-32 object-cover border" alt="Manufacturing" />
-                                ))}
-                            </div>
+                    </>
+                ) : (
+                    <div className="text-center p-12">
+                        <h1 className="text-3xl font-bold uppercase tracking-wider mb-2">{drone.modelName}</h1>
+                        <h2 className="text-xl text-gray-600 mb-8">Recurring Compliance Report</h2>
+                        <div className="border-t-2 border-b-2 border-gray-200 py-12">
+                            <p className="text-gray-400 italic">Recurring checklist data is not yet available.</p>
                         </div>
-
-                        <div className="mb-4">
-                            <h3 className="font-bold text-sm mb-2">Testing Facility</h3>
-                            <div className="grid grid-cols-3 gap-2">
-                                {uploads.infrastructureTesting.map((img: string, i: number) => (
-                                    <img key={i} src={img} className="w-full h-32 object-cover border" alt="Testing" />
-                                ))}
-                            </div>
-                        </div>
-                        <div className="mb-4">
-                            <h3 className="font-bold text-sm mb-2">Office</h3>
-                            <div className="grid grid-cols-3 gap-2">
-                                {uploads.infrastructureOffice.map((img: string, i: number) => (
-                                    <img key={i} src={img} className="w-full h-32 object-cover border" alt="Office" />
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Regulatory Display */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Regulatory Diplay & Security</h2>
-                        <div className="grid grid-cols-3 gap-2">
-                            {uploads.regulatoryDisplay.map((img: string, i: number) => (
-                                <img key={i} src={img} className="w-full h-32 object-cover border" alt="Regulatory" />
-                            ))}
-                            {uploads.hardwareSecurity.map((img: string, i: number) => (
-                                <img key={i} src={img} className="w-full h-32 object-cover border" alt="Security" />
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* Units */}
-                    <section className="break-inside-avoid">
-                        <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Manufactured Units</h2>
-                        <table className="w-full text-sm text-left border">
-                            <thead className="bg-gray-100 uppercase text-xs">
-                                <tr>
-                                    <th className="p-2 border">Serial Number</th>
-                                    <th className="p-2 border">UIN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {drone.manufacturedUnits?.map((unit, i) => (
-                                    <tr key={i} className="border-b">
-                                        <td className="p-2 border font-mono">{unit.serialNumber}</td>
-                                        <td className="p-2 border font-mono">{unit.uin}</td>
-                                    </tr>
-                                ))}
-                                {(!drone.manufacturedUnits || drone.manufacturedUnits.length === 0) && (
-                                    <tr>
-                                        <td colSpan={2} className="p-2 text-center text-gray-500">No units registered</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </section>
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );
