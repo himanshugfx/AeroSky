@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  accessId  String   @unique @map("access_id")
+  name      String
+  phone     String?
+  email     String?
+  position  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  drones Drone[] @relation("AccountableManager")
+
+  @@map("team_members")
+}
+
+model Subcontractor {
+  id            String   @id @default(uuid())
+  companyName   String   @map("company_name")
+  type          String   // 'Design' or 'Manufacturing'
+  contactPerson String?  @map("contact_person")
+  contactEmail  String?  @map("contact_email")
+  contactPhone  String?  @map("contact_phone")
+  agreementDate String?  @map("agreement_date")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("subcontractors")
+}
+
+model Drone {
+  id                   String   @id @default(uuid())
+  modelName            String   @map("model_name")
+  uin                  String
+  image                String?  @db.Text
+  accountableManagerId String?  @map("accountable_manager_id")
+  webPortalLink        String?  @map("web_portal_link")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  accountableManager TeamMember?   @relation("AccountableManager", fields: [accountableManagerId], references: [id])
+  uploads            DroneUpload[]
+  manufacturedUnits  ManufacturedUnit[]
+
+  @@map("drones")
+}
+
+model ManufacturedUnit {
+  id           String   @id @default(uuid())
+  droneId      String   @map("drone_id")
+  serialNumber String   @map("serial_number")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  drone Drone @relation(fields: [droneId], references: [id], onDelete: Cascade)
+
+  @@map("manufactured_units")
+}
+
+model DroneUpload {
+  id         String   @id @default(uuid())
+  droneId    String   @map("drone_id")
+  uploadType String   @map("upload_type") // training_manual, infrastructure_manufacturing, etc.
+  fileData   String   @db.Text @map("file_data")
+  label      String?  // For 'others' category
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  drone Drone @relation(fields: [droneId], references: [id], onDelete: Cascade)
+
+  @@map("drone_uploads")
+}
