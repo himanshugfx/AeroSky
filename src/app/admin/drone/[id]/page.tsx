@@ -107,10 +107,10 @@ export default function DroneProfilePage() {
     const [printMode, setPrintMode] = useState<'one-time' | 'recurring'>('one-time');
 
     // Recurring Checklist State
-    const [personnelData, setPersonnelData] = useState<{ position: string; previous: string; new: string }[]>([
-        { position: '', previous: '', new: '' },
-        { position: '', previous: '', new: '' },
-        { position: '', previous: '', new: '' }
+    const [personnelData, setPersonnelData] = useState<{ date: string; position: string; previous: string; new: string }[]>([
+        { date: '', position: '', previous: '', new: '' },
+        { date: '', position: '', previous: '', new: '' },
+        { date: '', position: '', previous: '', new: '' }
     ]);
     const [staffCompetenceData, setStaffCompetenceData] = useState<{ date: string; staff: string; examiner: string; result: string }[]>([
         { date: '', staff: '', examiner: '', result: '' },
@@ -692,7 +692,8 @@ export default function DroneProfilePage() {
                                 <table className="w-full text-sm text-left text-gray-400">
                                     <thead className="text-xs text-gray-500 uppercase bg-white/5">
                                         <tr>
-                                            <th className="px-4 py-3 rounded-tl-lg">Position</th>
+                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                            <th className="px-4 py-3">Position</th>
                                             <th className="px-4 py-3">Previous Personnel</th>
                                             <th className="px-4 py-3 rounded-tr-lg">New Personnel</th>
                                         </tr>
@@ -700,6 +701,18 @@ export default function DroneProfilePage() {
                                     <tbody>
                                         {personnelData.map((row, index) => (
                                             <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="date"
+                                                        value={row.date}
+                                                        onChange={(e) => {
+                                                            const newData = [...personnelData];
+                                                            newData[index].date = e.target.value;
+                                                            setPersonnelData(newData);
+                                                        }}
+                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
+                                                    />
+                                                </td>
                                                 <td className="px-4 py-2">
                                                     <input
                                                         type="text"
@@ -986,8 +999,9 @@ export default function DroneProfilePage() {
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
-                                        <th className="border p-2 w-1/3">Position</th>
-                                        <th className="border p-2 w-1/3">Previous Personnel</th>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/4">Position</th>
+                                        <th className="border p-2 w-1/4">Previous Personnel</th>
                                         <th className="border p-2 w-1/3">New Personnel</th>
                                     </tr>
                                 </thead>
@@ -995,6 +1009,7 @@ export default function DroneProfilePage() {
                                     {personnelData.some(p => p.position || p.previous || p.new) ? (
                                         personnelData.map((row, i) => (
                                             <tr key={i}>
+                                                <td className="border p-2">{row.date || '-'}</td>
                                                 <td className="border p-2 font-semibold min-h-[2rem]">{row.position || '-'}</td>
                                                 <td className="border p-2">{row.previous || '-'}</td>
                                                 <td className="border p-2">{row.new || '-'}</td>
@@ -1002,7 +1017,7 @@ export default function DroneProfilePage() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className="border p-2 text-center text-gray-500 italic">No personnel changes recorded.</td>
+                                            <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No personnel changes recorded.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -1029,7 +1044,7 @@ export default function DroneProfilePage() {
                                                 <td className="border p-2">{row.staff || '-'}</td>
                                                 <td className="border p-2">{row.examiner || '-'}</td>
                                                 <td className={`border p-2 font-semibold ${row.result === 'Competent' ? 'text-green-700' :
-                                                        row.result === 'Needs Training' ? 'text-red-700' : ''
+                                                    row.result === 'Needs Training' ? 'text-red-700' : ''
                                                     }`}>
                                                     {row.result || '-'}
                                                 </td>
