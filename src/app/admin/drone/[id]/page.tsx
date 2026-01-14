@@ -26,14 +26,7 @@ import { useComplianceStore } from "@/lib/complianceStore";
 import { FileUploader } from "@/components/FileUploader";
 import Link from "next/link";
 
-interface ChecklistItemProps {
-    title: string;
-    description: string;
-    icon: React.ElementType;
-    isComplete: boolean;
-    children: React.ReactNode;
-    defaultOpen?: boolean;
-}
+
 
 interface ChecklistItemProps {
     title: string;
