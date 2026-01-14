@@ -39,6 +39,7 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
             modelName,
             uin,
             image,
+            manufacturedUnits: [],
         };
 
         await addDrone(droneData);
