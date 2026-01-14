@@ -20,6 +20,7 @@ import {
     AlertTriangle,
     Plane,
     GraduationCap,
+    Trash2,
 } from "lucide-react";
 import { useComplianceStore } from "@/lib/complianceStore";
 import { FileUploader } from "@/components/FileUploader";
@@ -751,7 +752,8 @@ export default function DroneProfilePage() {
                                                 <th className="px-4 py-3 rounded-tl-lg">Date</th>
                                                 <th className="px-4 py-3">Position</th>
                                                 <th className="px-4 py-3">Previous</th>
-                                                <th className="px-4 py-3 rounded-tr-lg">New</th>
+                                                <th className="px-4 py-3">New</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -761,6 +763,20 @@ export default function DroneProfilePage() {
                                                     <td className="px-4 py-2">{row.position}</td>
                                                     <td className="px-4 py-2">{row.previous}</td>
                                                     <td className="px-4 py-2">{row.new}</td>
+                                                    <td className="px-4 py-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const newData = personnelData.filter((_, i) => i !== index);
+                                                                setPersonnelData(newData);
+                                                                setPersonnelReported(false);
+                                                                updateRecurringData(droneId, { personnel: newData, personnelReported: false });
+                                                            }}
+                                                            className="text-red-500 hover:text-red-400 transition-colors"
+                                                            title="Delete Record"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
