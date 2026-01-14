@@ -13,7 +13,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
     const addDrone = useComplianceStore((state) => state.addDrone);
 
     const [modelName, setModelName] = useState("");
-    const [uin, setUin] = useState("");
     const [image, setImage] = useState<string | undefined>();
     const [loading, setLoading] = useState(false);
 
@@ -37,7 +36,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
         // Clear fields before adding (per user rules)
         const droneData = {
             modelName,
-            uin,
             image,
             manufacturedUnits: [],
         };
@@ -46,7 +44,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
 
         // Reset form
         setModelName("");
-        setUin("");
         setImage(undefined);
         setLoading(false);
         onClose();
@@ -112,7 +109,7 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6">
                         {/* Model Name */}
                         <div>
                             <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
@@ -123,21 +120,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
                                 value={modelName}
                                 onChange={(e) => setModelName(e.target.value)}
                                 placeholder="e.g., AeroX-500 Pro"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
-                                required
-                            />
-                        </div>
-
-                        {/* UIN */}
-                        <div>
-                            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                UIN
-                            </label>
-                            <input
-                                type="text"
-                                value={uin}
-                                onChange={(e) => setUin(e.target.value)}
-                                placeholder="UIN-DGCA-2024-001"
                                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
                                 required
                             />

@@ -42,12 +42,15 @@ export async function GET() {
             return {
                 id: drone.id,
                 modelName: drone.modelName,
-                uin: drone.uin,
+                // uin: drone.uin, // Removed
                 image: drone.image,
                 accountableManagerId: drone.accountableManagerId,
                 createdAt: drone.createdAt.toISOString(),
                 uploads,
-                manufacturedUnits: drone.manufacturedUnits.map((u: any) => u.serialNumber),
+                manufacturedUnits: drone.manufacturedUnits.map((u: any) => ({
+                    serialNumber: u.serialNumber,
+                    uin: u.uin,
+                })),
             };
         });
 
@@ -62,16 +65,18 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { modelName, uin, image, manufacturedUnits } = body;
+        // Remove uin from top level
+        const { modelName, image, manufacturedUnits } = body;
 
         const drone = await prisma.drone.create({
             data: {
                 modelName,
-                uin,
+                // uin, // Removed
                 image,
                 manufacturedUnits: {
-                    create: (manufacturedUnits || []).map((sn: string) => ({
-                        serialNumber: sn,
+                    create: (manufacturedUnits || []).map((unit: any) => ({
+                        serialNumber: unit.serialNumber,
+                        uin: unit.uin,
                     })),
                 },
             },
@@ -83,11 +88,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             id: drone.id,
             modelName: drone.modelName,
-            uin: drone.uin,
+            // uin: drone.uin,
             image: drone.image,
             accountableManagerId: drone.accountableManagerId,
             createdAt: drone.createdAt.toISOString(),
-            manufacturedUnits: drone.manufacturedUnits.map((u: any) => u.serialNumber),
+            manufacturedUnits: drone.manufacturedUnits.map((u: any) => ({
+                serialNumber: u.serialNumber,
+                uin: u.uin,
+            })),
             uploads: {
                 infrastructureManufacturing: [],
                 infrastructureTesting: [],

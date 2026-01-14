@@ -102,7 +102,6 @@ export default function DroneProfilePage() {
 
     const [loading, setLoading] = useState(true);
     const [webPortalLink, setWebPortalLink] = useState("");
-    const [manufacturedUnitsInput, setManufacturedUnitsInput] = useState("");
     const [otherLabel, setOtherLabel] = useState("");
 
     useEffect(() => {
@@ -116,9 +115,6 @@ export default function DroneProfilePage() {
     useEffect(() => {
         if (drone?.uploads.webPortalLink) {
             setWebPortalLink(drone.uploads.webPortalLink);
-        }
-        if (drone?.manufacturedUnits) {
-            setManufacturedUnitsInput(drone.manufacturedUnits.join(", "));
         }
     }, [drone]);
 
@@ -193,7 +189,7 @@ export default function DroneProfilePage() {
                     <div>
                         <h1 className="text-2xl font-bold text-white">{drone.modelName}</h1>
                         <p className="text-sm text-gray-500 uppercase font-bold tracking-widest">
-                            UIN: {drone.uin}
+                            Type Certificate Holder
                         </p>
                     </div>
                 </div>
@@ -525,47 +521,69 @@ export default function DroneProfilePage() {
                 >
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Serial Numbers (Comma Separated)
-                            </label>
+                            <h4 className="text-sm font-semibold text-gray-300">Registered Units</h4>
                             {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
                                 <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
-                                    {drone.manufacturedUnits.length} Units Registered
+                                    {drone.manufacturedUnits.length} Units
                                 </span>
                             )}
                         </div>
-                        <textarea
-                            value={manufacturedUnitsInput}
-                            onChange={(e) => setManufacturedUnitsInput(e.target.value)}
-                            placeholder="SN-001, SN-002, SN-003..."
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all h-24 resize-none"
-                        />
-                        <button
-                            onClick={() => {
-                                const units = manufacturedUnitsInput
-                                    .split(",")
-                                    .map((s) => s.trim())
-                                    .filter(Boolean);
-                                updateManufacturedUnits(droneId, units);
-                            }}
-                            className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-xl transition-colors w-full sm:w-auto"
-                        >
-                            Update Manufactured Units
-                        </button>
 
-                        {/* Visual representation of current units */}
-                        {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
-                            <div className="flex flex-wrap gap-2 pt-2">
-                                {drone.manufacturedUnits.map((sn, idx) => (
-                                    <span
-                                        key={idx}
-                                        className="bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-[10px] font-mono text-gray-400"
-                                    >
-                                        {sn}
-                                    </span>
-                                ))}
+                        {/* List of Units */}
+                        <div className="space-y-2">
+                            {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 ? (
+                                drone.manufacturedUnits.map((unit, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-xl">
+                                        <div>
+                                            <p className="text-sm text-white font-mono">{unit.serialNumber}</p>
+                                            <p className="text-xs text-gray-500 font-mono">UIN: {unit.uin}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-gray-500 italic">No units registered yet.</p>
+                            )}
+                        </div>
+
+                        {/* Add New Unit Form */}
+                        <div className="pt-4 border-t border-white/5">
+                            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                Add New Unit
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                <input
+                                    type="text"
+                                    placeholder="Serial Number"
+                                    id="new-sn"
+                                    className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="UIN"
+                                    id="new-uin"
+                                    className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
                             </div>
-                        )}
+                            <button
+                                onClick={() => {
+                                    const snInput = document.getElementById('new-sn') as HTMLInputElement;
+                                    const uinInput = document.getElementById('new-uin') as HTMLInputElement;
+                                    const sn = snInput.value.trim();
+                                    const uin = uinInput.value.trim();
+
+                                    if (sn && uin) {
+                                        const currentUnits = drone.manufacturedUnits || [];
+                                        const newUnits = [...currentUnits, { serialNumber: sn, uin: uin }];
+                                        updateManufacturedUnits(droneId, newUnits);
+                                        snInput.value = '';
+                                        uinInput.value = '';
+                                    }
+                                }}
+                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-xl transition-colors text-sm"
+                            >
+                                Add Unit
+                            </button>
+                        </div>
                     </div>
                 </ChecklistItem>
             </div>

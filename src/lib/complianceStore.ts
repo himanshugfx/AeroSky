@@ -34,14 +34,19 @@ export interface DroneUpload {
     webPortalLink?: string;
 }
 
+export interface ManufacturedUnit {
+    serialNumber: string;
+    uin: string;
+}
+
 export interface Drone {
     id: string;
     modelName: string;
-    uin: string;
+    // uin: string; // Removed from top-level
     image?: string;
     accountableManagerId?: string;
     uploads: DroneUpload;
-    manufacturedUnits: string[];
+    manufacturedUnits: ManufacturedUnit[];
     createdAt: string;
 }
 
@@ -57,7 +62,7 @@ interface ComplianceState {
     fetchSubcontractors: () => Promise<void>;
 
     // Drone actions
-    addDrone: (drone: Omit<Drone, 'id' | 'createdAt' | 'uploads'>) => Promise<void>;
+    addDrone: (drone: Omit<Drone, 'id' | 'createdAt' | 'uploads' | 'manufacturedUnits'>) => Promise<void>;
     updateDrone: (id: string, updates: Partial<Drone>) => Promise<void>;
     deleteDrone: (id: string) => Promise<void>;
     getDrone: (id: string) => Drone | undefined;
@@ -76,7 +81,7 @@ interface ComplianceState {
     updateDroneUploads: (droneId: string, uploadType: string, files: string | string[], label?: string) => Promise<void>;
     assignAccountableManager: (droneId: string, managerId: string) => Promise<void>;
     updateWebPortal: (droneId: string, link: string) => Promise<void>;
-    updateManufacturedUnits: (droneId: string, units: string[]) => Promise<void>;
+    updateManufacturedUnits: (droneId: string, units: ManufacturedUnit[]) => Promise<void>;
 }
 
 export const useComplianceStore = create<ComplianceState>((set, get) => ({

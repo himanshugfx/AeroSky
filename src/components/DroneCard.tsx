@@ -30,10 +30,6 @@ export function DroneCard({ drone }: DroneCardProps) {
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-                    {/* UIN Badge */}
-                    <div className="absolute top-4 right-4 bg-blue-600/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <span className="text-[10px] font-bold text-white tracking-wider">{drone.uin}</span>
-                    </div>
                 </div>
 
                 {/* Content */}

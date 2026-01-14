@@ -48,12 +48,15 @@ export async function GET(
         return NextResponse.json({
             id: drone.id,
             modelName: drone.modelName,
-            uin: drone.uin,
+            // uin: drone.uin, // Removed
             image: drone.image,
             accountableManagerId: drone.accountableManagerId,
             createdAt: drone.createdAt.toISOString(),
             uploads,
-            manufacturedUnits: drone.manufacturedUnits.map((u: any) => u.serialNumber),
+            manufacturedUnits: drone.manufacturedUnits.map((u: any) => ({
+                serialNumber: u.serialNumber,
+                uin: u.uin,
+            })),
         });
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch drone" }, { status: 500 });
@@ -68,21 +71,22 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { modelName, uin, image, accountableManagerId, webPortalLink, manufacturedUnits } = body;
+        const { modelName, image, accountableManagerId, webPortalLink, manufacturedUnits } = body;
 
         const drone = await prisma.drone.update({
             where: { id },
             data: {
                 modelName,
-                uin,
+                // uin, // Removed
                 image,
                 accountableManagerId,
                 webPortalLink,
                 ...(manufacturedUnits && {
                     manufacturedUnits: {
                         deleteMany: {},
-                        create: manufacturedUnits.map((sn: string) => ({
-                            serialNumber: sn,
+                        create: manufacturedUnits.map((unit: any) => ({
+                            serialNumber: unit.serialNumber,
+                            uin: unit.uin,
                         })),
                     },
                 }),
