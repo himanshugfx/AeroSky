@@ -236,7 +236,7 @@ export default function DroneProfilePage() {
                         </div>
                     </button>
 
-                    <div id="one-time-checklist-content" className="p-4 border-t border-white/5 space-y-2">
+                    <div id="one-time-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
                         {/* 1. Organizational Manual */}
                         <ChecklistItem
                             title="1. Organizational Manual"
@@ -657,7 +657,7 @@ export default function DroneProfilePage() {
                         </div>
                     </button>
 
-                    <div id="recurring-checklist-content" className="p-4 border-t border-white/5 space-y-2">
+                    <div id="recurring-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
                         <div className="p-8 text-center border-2 border-dashed border-white/10 rounded-xl">
                             <p className="text-gray-500 italic">Recurring checklist items will appear here...</p>
                         </div>
