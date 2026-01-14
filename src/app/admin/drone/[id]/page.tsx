@@ -19,6 +19,7 @@ import {
     Check,
     AlertTriangle,
     Plane,
+    GraduationCap,
 } from "lucide-react";
 import { useComplianceStore } from "@/lib/complianceStore";
 import { FileUploader } from "@/components/FileUploader";
@@ -152,6 +153,11 @@ export default function DroneProfilePage() {
         { date: '', staff: '', examiner: '', result: '' },
         { date: '', staff: '', examiner: '', result: '' }
     ]);
+    const [trainingRecords, setTrainingRecords] = useState<{ date: string; trainer: string; session: string; description: string; duration: string }[]>([
+        { date: '', trainer: '', session: '', description: '', duration: '' },
+        { date: '', trainer: '', session: '', description: '', duration: '' },
+        { date: '', trainer: '', session: '', description: '', duration: '' }
+    ]);
     const [personnelReported, setPersonnelReported] = useState(false);
 
     useEffect(() => {
@@ -177,6 +183,9 @@ export default function DroneProfilePage() {
         }
         if (rData?.staffCompetence) {
             setStaffCompetenceData(rData.staffCompetence);
+        }
+        if (rData?.trainingRecords) {
+            setTrainingRecords(rData.trainingRecords);
         }
     }, [drone]);
 
@@ -939,6 +948,107 @@ export default function DroneProfilePage() {
                                 </div>
                             </div>
                         </ChecklistItem>
+
+                        {/* 4. Training Records */}
+                        <ChecklistItem
+                            title="4. Training Record"
+                            description="Training record of two years"
+                            icon={GraduationCap}
+                            isComplete={trainingRecords.some(t => t.trainer && t.session)}
+                        >
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left text-gray-400">
+                                    <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                        <tr>
+                                            <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                            <th className="px-4 py-3">Trainer</th>
+                                            <th className="px-4 py-3">Session Name</th>
+                                            <th className="px-4 py-3">Description</th>
+                                            <th className="px-4 py-3 rounded-tr-lg">Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {trainingRecords.map((row, index) => (
+                                            <tr key={index} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="date"
+                                                        value={row.date}
+                                                        onChange={(e) => {
+                                                            const newData = [...trainingRecords];
+                                                            newData[index].date = e.target.value;
+                                                            setTrainingRecords(newData);
+                                                        }}
+                                                        className="bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1 [&::-webkit-calendar-picker-indicator]:invert"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="text"
+                                                        value={row.trainer}
+                                                        onChange={(e) => {
+                                                            const newData = [...trainingRecords];
+                                                            newData[index].trainer = e.target.value;
+                                                            setTrainingRecords(newData);
+                                                        }}
+                                                        placeholder="Trainer Name"
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="text"
+                                                        value={row.session}
+                                                        onChange={(e) => {
+                                                            const newData = [...trainingRecords];
+                                                            newData[index].session = e.target.value;
+                                                            setTrainingRecords(newData);
+                                                        }}
+                                                        placeholder="Session Name"
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="text"
+                                                        value={row.description}
+                                                        onChange={(e) => {
+                                                            const newData = [...trainingRecords];
+                                                            newData[index].description = e.target.value;
+                                                            setTrainingRecords(newData);
+                                                        }}
+                                                        placeholder="Topics covered..."
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    <input
+                                                        type="text"
+                                                        value={row.duration}
+                                                        onChange={(e) => {
+                                                            const newData = [...trainingRecords];
+                                                            newData[index].duration = e.target.value;
+                                                            setTrainingRecords(newData);
+                                                        }}
+                                                        placeholder="e.g. 2 hrs"
+                                                        className="w-full bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-white py-1"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        onClick={() => updateRecurringData(droneId, { trainingRecords: trainingRecords })}
+                                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </ChecklistItem>
+
                     </div>
                 </div>
             </div>
@@ -1125,6 +1235,39 @@ export default function DroneProfilePage() {
                                     ) : (
                                         <tr>
                                             <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No staff competence checks recorded.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* Training Records Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">4. Training Record</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/5">Trainer</th>
+                                        <th className="border p-2 w-1/5">Session</th>
+                                        <th className="border p-2 w-1/4">Description</th>
+                                        <th className="border p-2 w-1/6">Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {trainingRecords.some(t => t.trainer || t.session) ? (
+                                        trainingRecords.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date || '-'}</td>
+                                                <td className="border p-2">{row.trainer || '-'}</td>
+                                                <td className="border p-2 font-semibold">{row.session || '-'}</td>
+                                                <td className="border p-2 text-xs">{row.description || '-'}</td>
+                                                <td className="border p-2">{row.duration || '-'}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="border p-2 text-center text-gray-500 italic">No training records found.</td>
                                         </tr>
                                     )}
                                 </tbody>
