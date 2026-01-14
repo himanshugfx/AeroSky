@@ -97,10 +97,12 @@ export default function DroneProfilePage() {
         updateDroneUploads,
         assignAccountableManager,
         updateWebPortal,
+        updateManufacturedUnits,
     } = useComplianceStore();
 
     const [loading, setLoading] = useState(true);
     const [webPortalLink, setWebPortalLink] = useState("");
+    const [manufacturedUnitsInput, setManufacturedUnitsInput] = useState("");
     const [otherLabel, setOtherLabel] = useState("");
 
     useEffect(() => {
@@ -114,6 +116,9 @@ export default function DroneProfilePage() {
     useEffect(() => {
         if (drone?.uploads.webPortalLink) {
             setWebPortalLink(drone.uploads.webPortalLink);
+        }
+        if (drone?.manufacturedUnits) {
+            setManufacturedUnitsInput(drone.manufacturedUnits.join(", "));
         }
     }, [drone]);
 
@@ -154,6 +159,7 @@ export default function DroneProfilePage() {
         subcontractors: subcontractors.length > 0,
         hardware: uploads.hardwareSecurity.length > 0,
         webPortal: !!uploads.webPortalLink,
+        manufacturedUnits: (drone.manufacturedUnits || []).length > 0,
     };
 
     const completedCount = Object.values(checks).filter(Boolean).length;
@@ -200,25 +206,6 @@ export default function DroneProfilePage() {
                 </button>
             </div>
 
-            {/* Manufactured Units */}
-            {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
-                <div className="bg-[#0f0f12] border border-white/5 rounded-2xl p-6 mb-8">
-                    <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-                        <Wrench className="w-4 h-4 text-blue-500" />
-                        Manufactured Units ({drone.manufacturedUnits.length})
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                        {drone.manufacturedUnits.map((sn, idx) => (
-                            <span
-                                key={idx}
-                                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-all"
-                            >
-                                {sn}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
 
             {/* Checklist Items */}
             <div className="space-y-2">
@@ -527,7 +514,58 @@ export default function DroneProfilePage() {
                             </p>
                         )}
                     </div>
-                </ChecklistItem>
+                    {/* 10. Manufactured Units */}
+                    <ChecklistItem
+                        title="10. Manufactured Units"
+                        description="List of individual drone serial numbers"
+                        icon={Wrench}
+                        isComplete={checks.manufacturedUnits}
+                    >
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    Serial Numbers (Comma Separated)
+                                </label>
+                                {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
+                                    <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
+                                        {drone.manufacturedUnits.length} Units Registered
+                                    </span>
+                                )}
+                            </div>
+                            <textarea
+                                value={manufacturedUnitsInput}
+                                onChange={(e) => setManufacturedUnitsInput(e.target.value)}
+                                placeholder="SN-001, SN-002, SN-003..."
+                                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all h-24 resize-none"
+                            />
+                            <button
+                                onClick={() => {
+                                    const units = manufacturedUnitsInput
+                                        .split(",")
+                                        .map((s) => s.trim())
+                                        .filter(Boolean);
+                                    updateManufacturedUnits(droneId, units);
+                                }}
+                                className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-xl transition-colors w-full sm:w-auto"
+                            >
+                                Update Manufactured Units
+                            </button>
+
+                            {/* Visual representation of current units */}
+                            {drone.manufacturedUnits && drone.manufacturedUnits.length > 0 && (
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    {drone.manufacturedUnits.map((sn, idx) => (
+                                        <span
+                                            key={idx}
+                                            className="bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-[10px] font-mono text-gray-400"
+                                        >
+                                            {sn}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </ChecklistItem>
             </div>
         </div>
     );

@@ -68,7 +68,7 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { modelName, uin, image, accountableManagerId, webPortalLink } = body;
+        const { modelName, uin, image, accountableManagerId, webPortalLink, manufacturedUnits } = body;
 
         const drone = await prisma.drone.update({
             where: { id },
@@ -78,6 +78,14 @@ export async function PUT(
                 image,
                 accountableManagerId,
                 webPortalLink,
+                ...(manufacturedUnits && {
+                    manufacturedUnits: {
+                        deleteMany: {},
+                        create: manufacturedUnits.map((sn: string) => ({
+                            serialNumber: sn,
+                        })),
+                    },
+                }),
             },
         });
 

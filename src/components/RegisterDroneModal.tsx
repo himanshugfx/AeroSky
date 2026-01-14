@@ -14,7 +14,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
 
     const [modelName, setModelName] = useState("");
     const [uin, setUin] = useState("");
-    const [manufacturedUnits, setManufacturedUnits] = useState("");
     const [image, setImage] = useState<string | undefined>();
     const [loading, setLoading] = useState(false);
 
@@ -35,18 +34,11 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
         e.preventDefault();
         setLoading(true);
 
-        // Parse manufactured units (comma separated serial numbers)
-        const unitsList = manufacturedUnits
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s !== "");
-
         // Clear fields before adding (per user rules)
         const droneData = {
             modelName,
             uin,
             image,
-            manufacturedUnits: unitsList,
         };
 
         await addDrone(droneData);
@@ -54,7 +46,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
         // Reset form
         setModelName("");
         setUin("");
-        setManufacturedUnits("");
         setImage(undefined);
         setLoading(false);
         onClose();
@@ -150,20 +141,6 @@ export function RegisterDroneModal({ isOpen, onClose }: RegisterDroneModalProps)
                                 required
                             />
                         </div>
-                    </div>
-
-                    {/* Manufactured Units */}
-                    <div>
-                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                            Manufactured Units (Serial Numbers)
-                        </label>
-                        <textarea
-                            value={manufacturedUnits}
-                            onChange={(e) => setManufacturedUnits(e.target.value)}
-                            placeholder="SN-001, SN-002, SN-003..."
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all h-24 resize-none"
-                        />
-                        <p className="text-[10px] text-gray-500 mt-1">Separate units with commas</p>
                     </div>
 
                     {/* Submit */}

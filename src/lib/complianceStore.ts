@@ -76,6 +76,7 @@ interface ComplianceState {
     updateDroneUploads: (droneId: string, uploadType: string, files: string | string[], label?: string) => Promise<void>;
     assignAccountableManager: (droneId: string, managerId: string) => Promise<void>;
     updateWebPortal: (droneId: string, link: string) => Promise<void>;
+    updateManufacturedUnits: (droneId: string, units: string[]) => Promise<void>;
 }
 
 export const useComplianceStore = create<ComplianceState>((set, get) => ({
@@ -284,6 +285,23 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
             }));
         } catch (error) {
             console.error('Failed to update web portal:', error);
+        }
+    },
+
+    updateManufacturedUnits: async (droneId, units) => {
+        try {
+            await fetch(`/api/drones/${droneId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ manufacturedUnits: units }),
+            });
+            set((state) => ({
+                drones: state.drones.map((d) =>
+                    d.id === droneId ? { ...d, manufacturedUnits: units } : d
+                ),
+            }));
+        } catch (error) {
+            console.error('Failed to update manufactured units:', error);
         }
     },
 }));

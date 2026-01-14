@@ -98,8 +98,7 @@ export default function AdminLayout({
                 {/* Header */}
                 <header className="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-[#0a0a0c]/50 backdrop-blur-xl sticky top-0 z-10">
                     <div>
-                        <h1 className="text-lg font-bold">DGCA One-Time Checklist</h1>
-                        <p className="text-xs text-gray-500">Initial Establishment & Infrastructure Requirements</p>
+                        <h1 className="text-lg font-bold">DGCA Compliance</h1>
                     </div>
 
                     <div className="flex items-center gap-4">
