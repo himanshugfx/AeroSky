@@ -83,3 +83,14 @@ model DroneUpload {
 
   @@map("drone_uploads")
 }
+
+model Battery {
+  id             String   @id @default(uuid())
+  model          String
+  ratedCapacity  String   @map("rated_capacity")
+  batteryNumberA String   @map("battery_number_a")
+  batteryNumberB String   @map("battery_number_b")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("batteries")
+}

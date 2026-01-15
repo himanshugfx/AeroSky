@@ -39,6 +39,15 @@ export interface ManufacturedUnit {
     uin: string;
 }
 
+export interface Battery {
+    id: string;
+    model: string;
+    ratedCapacity: string;
+    batteryNumberA: string;
+    batteryNumberB: string;
+    createdAt: string;
+}
+
 export interface Drone {
     id: string;
     modelName: string;
@@ -54,12 +63,14 @@ interface ComplianceState {
     drones: Drone[];
     teamMembers: TeamMember[];
     subcontractors: Subcontractor[];
+    batteries: Battery[];
     loading: boolean;
 
     // Fetch actions
     fetchDrones: () => Promise<void>;
     fetchTeamMembers: () => Promise<void>;
     fetchSubcontractors: () => Promise<void>;
+    fetchBatteries: () => Promise<void>;
 
     // Drone actions
     addDrone: (drone: Omit<Drone, 'id' | 'createdAt' | 'uploads' | 'manufacturedUnits'>) => Promise<void>;
@@ -77,6 +88,10 @@ interface ComplianceState {
     updateSubcontractor: (id: string, updates: Partial<Subcontractor>) => Promise<void>;
     deleteSubcontractor: (id: string) => Promise<void>;
 
+    // Battery actions
+    addBattery: (battery: Omit<Battery, 'id' | 'createdAt'>) => Promise<void>;
+    deleteBattery: (id: string) => Promise<void>;
+
     // Upload actions
     updateDroneUploads: (droneId: string, uploadType: string, files: string | string[], label?: string) => Promise<void>;
     assignAccountableManager: (droneId: string, managerId: string) => Promise<void>;
@@ -89,6 +104,7 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
     drones: [],
     teamMembers: [],
     subcontractors: [],
+    batteries: [],
     loading: false,
 
     // Fetch all drones
@@ -96,7 +112,9 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
         try {
             const res = await fetch('/api/drones');
             const data = await res.json();
-            set({ drones: data });
+            if (Array.isArray(data)) {
+                set({ drones: data });
+            }
         } catch (error) {
             console.error('Failed to fetch drones:', error);
         }
@@ -107,7 +125,9 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
         try {
             const res = await fetch('/api/team');
             const data = await res.json();
-            set({ teamMembers: data });
+            if (Array.isArray(data)) {
+                set({ teamMembers: data });
+            }
         } catch (error) {
             console.error('Failed to fetch team members:', error);
         }
@@ -118,9 +138,24 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
         try {
             const res = await fetch('/api/subcontractors');
             const data = await res.json();
-            set({ subcontractors: data });
+            if (Array.isArray(data)) {
+                set({ subcontractors: data });
+            }
         } catch (error) {
             console.error('Failed to fetch subcontractors:', error);
+        }
+    },
+
+    // Fetch all batteries
+    fetchBatteries: async () => {
+        try {
+            const res = await fetch('/api/batteries');
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                set({ batteries: data });
+            }
+        } catch (error) {
+            console.error('Failed to fetch batteries:', error);
         }
     },
 
@@ -243,7 +278,29 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
         }
     },
 
-    // Upload actions
+    // Battery actions
+    addBattery: async (battery) => {
+        try {
+            const res = await fetch('/api/batteries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(battery),
+            });
+            const newBattery = await res.json();
+            set((state) => ({ batteries: [newBattery, ...state.batteries] }));
+        } catch (error) {
+            console.error('Failed to add battery:', error);
+        }
+    },
+
+    deleteBattery: async (id) => {
+        try {
+            await fetch(`/api/batteries/${id}`, { method: 'DELETE' });
+            set((state) => ({ batteries: state.batteries.filter((b) => b.id !== id) }));
+        } catch (error) {
+            console.error('Failed to delete battery:', error);
+        }
+    },
     updateDroneUploads: async (droneId, uploadType, files, label) => {
         try {
             await fetch(`/api/drones/${droneId}/uploads`, {

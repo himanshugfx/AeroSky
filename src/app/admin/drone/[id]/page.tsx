@@ -21,6 +21,8 @@ import {
     Plane,
     GraduationCap,
     Trash2,
+    BatteryCharging,
+    ClipboardList,
 } from "lucide-react";
 import { useComplianceStore } from "@/lib/complianceStore";
 import { FileUploader } from "@/components/FileUploader";
@@ -124,6 +126,8 @@ export default function DroneProfilePage() {
         fetchTeamMembers,
         subcontractors,
         fetchSubcontractors,
+        batteries,
+        fetchBatteries,
         updateDroneUploads,
         assignAccountableManager,
         updateWebPortal,
@@ -149,13 +153,19 @@ export default function DroneProfilePage() {
     const [equipmentMaintenance, setEquipmentMaintenance] = useState<{ date: string; equipment: string; serial: string; type: string; doneBy: string }[]>([]);
     const [newEquipmentMaintenance, setNewEquipmentMaintenance] = useState({ date: '', equipment: '', serial: '', type: '', doneBy: '' });
 
+    const [batterySafetyData, setBatterySafetyData] = useState<{ date: string; testedItem: string; itemId: string; condition: string; testedBy: string }[]>([]);
+    const [newBatterySafety, setNewBatterySafety] = useState({ date: '', testedItem: '', itemId: '', condition: '', testedBy: '' });
+
+    const [operationalRecords, setOperationalRecords] = useState<{ date: string; operation: string; uin: string; serialNumber?: string; transferredTo?: string }[]>([]);
+    const [newOperationalRecord, setNewOperationalRecord] = useState({ date: '', operation: '', uin: '', serialNumber: '', transferredTo: '' });
+
     const [personnelReported, setPersonnelReported] = useState(false);
 
     useEffect(() => {
-        Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors()]).finally(() =>
+        Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors(), fetchBatteries()]).finally(() =>
             setLoading(false)
         );
-    }, [fetchDrones, fetchTeamMembers, fetchSubcontractors]);
+    }, [fetchDrones, fetchTeamMembers, fetchSubcontractors, fetchBatteries]);
 
     const drone = drones.find((d) => d.id === droneId);
 
@@ -180,6 +190,12 @@ export default function DroneProfilePage() {
         }
         if (rData?.equipmentMaintenance) {
             setEquipmentMaintenance(rData.equipmentMaintenance);
+        }
+        if (rData?.batterySafety) {
+            setBatterySafetyData(rData.batterySafety);
+        }
+        if (rData?.operationalRecords) {
+            setOperationalRecords(rData.operationalRecords);
         }
     }, [drone]);
 
@@ -844,7 +860,105 @@ export default function DroneProfilePage() {
                             </div>
                         </ChecklistItem>
 
-                        {/* 2. Staff Competence  */}
+                        {/* 3. Staff Competence */}
+                        <ChecklistItem
+                            title="3. Staff Competence"
+                            description="Random checks of staff understanding and compliance with manufacturer procedure"
+                            icon={UserCheck}
+                            isComplete={staffCompetenceData.length > 0}
+                        >
+                            <div className="overflow-x-auto">
+                                {staffCompetenceData.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Staff Examined</th>
+                                                <th className="px-4 py-3">Examined By</th>
+                                                <th className="px-4 py-3">Result</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {staffCompetenceData.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2">{row.staff}</td>
+                                                    <td className="px-4 py-2">{row.examiner}</td>
+                                                    <td className={`px-4 py-2 font-semibold ${row.result === 'Competent' ? 'text-green-500' : 'text-yellow-500'}`}>
+                                                        {row.result === 'Competent' ? 'Staff is Competent' : 'Needs Training'}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const newData = staffCompetenceData.filter((_, i) => i !== index);
+                                                                setStaffCompetenceData(newData);
+                                                                updateRecurringData(droneId, { staffCompetence: newData });
+                                                            }}
+                                                            className="text-red-500 hover:text-red-400 transition-colors"
+                                                            title="Delete Record"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* Add New Form */}
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2 p-3 bg-white/5 rounded-lg">
+                                    <input
+                                        type="date"
+                                        value={newStaffCompetence.date}
+                                        onChange={(e) => setNewStaffCompetence({ ...newStaffCompetence, date: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                    />
+                                    <select
+                                        value={newStaffCompetence.staff}
+                                        onChange={(e) => setNewStaffCompetence({ ...newStaffCompetence, staff: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Staff Examined</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
+                                    <select
+                                        value={newStaffCompetence.examiner}
+                                        onChange={(e) => setNewStaffCompetence({ ...newStaffCompetence, examiner: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Examined By</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
+                                    <select
+                                        value={newStaffCompetence.result}
+                                        onChange={(e) => setNewStaffCompetence({ ...newStaffCompetence, result: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Result</option>
+                                        <option value="Competent">Staff is Competent</option>
+                                        <option value="Needs Training">Staff needs to be trained</option>
+                                    </select>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newStaffCompetence.date && newStaffCompetence.staff && newStaffCompetence.result) {
+                                            const newData = [...staffCompetenceData, newStaffCompetence];
+                                            setStaffCompetenceData(newData);
+                                            setNewStaffCompetence({ date: '', staff: '', examiner: '', result: '' });
+                                            updateRecurringData(droneId, { staffCompetence: newData });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Staff Competence Record
+                                </button>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 4. Training Record */}
                         <ChecklistItem
                             title="4. Training Record"
                             description="Training record of two years"
@@ -1017,6 +1131,255 @@ export default function DroneProfilePage() {
                                     className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
                                 >
                                     + Add Equipment Record
+                                </button>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 6. Battery Safety */}
+                        <ChecklistItem
+                            title="6. Battery Safety"
+                            description="Condition of stored battery and charging facility"
+                            icon={BatteryCharging}
+                            isComplete={batterySafetyData.length > 0}
+                        >
+                            <div className="overflow-x-auto">
+                                {batterySafetyData.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Tested Item</th>
+                                                <th className="px-4 py-3">Item ID</th>
+                                                <th className="px-4 py-3">Condition</th>
+                                                <th className="px-4 py-3">Tested By</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {batterySafetyData.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2 capitalize">{row.testedItem}</td>
+                                                    <td className="px-4 py-2 font-mono">{row.itemId}</td>
+                                                    <td className={`px-4 py-2 font-semibold ${row.condition === 'Excellent' ? 'text-green-500' :
+                                                        row.condition === 'Good' ? 'text-blue-500' : 'text-red-500'
+                                                        }`}>
+                                                        {row.condition}
+                                                    </td>
+                                                    <td className="px-4 py-2">{row.testedBy}</td>
+                                                    <td className="px-4 py-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const newData = batterySafetyData.filter((_, i) => i !== index);
+                                                                setBatterySafetyData(newData);
+                                                                updateRecurringData(droneId, { batterySafety: newData });
+                                                            }}
+                                                            className="text-red-500 hover:text-red-400 transition-colors"
+                                                            title="Delete Record"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* Add New Form */}
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white/5 rounded-lg">
+                                    <input
+                                        type="date"
+                                        value={newBatterySafety.date}
+                                        onChange={(e) => setNewBatterySafety({ ...newBatterySafety, date: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                    />
+                                    <select
+                                        value={newBatterySafety.testedItem}
+                                        onChange={(e) => setNewBatterySafety({ ...newBatterySafety, testedItem: e.target.value, itemId: '' })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Tested Item</option>
+                                        <option value="battery">Battery</option>
+                                        <option value="charger">Charger</option>
+                                    </select>
+                                    {newBatterySafety.testedItem === 'battery' ? (
+                                        <select
+                                            value={newBatterySafety.itemId}
+                                            onChange={(e) => setNewBatterySafety({ ...newBatterySafety, itemId: e.target.value })}
+                                            className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                        >
+                                            <option value="">Select Battery</option>
+                                            {batteries.map(b => (
+                                                <option key={b.id} value={`${b.batteryNumberA}+${b.batteryNumberB}`}>
+                                                    {b.model} ({b.batteryNumberA}+{b.batteryNumberB})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            placeholder="Charger Number"
+                                            value={newBatterySafety.itemId}
+                                            onChange={(e) => setNewBatterySafety({ ...newBatterySafety, itemId: e.target.value })}
+                                            className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                        />
+                                    )}
+                                    <select
+                                        value={newBatterySafety.condition}
+                                        onChange={(e) => setNewBatterySafety({ ...newBatterySafety, condition: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Condition</option>
+                                        <option value="Excellent">Excellent</option>
+                                        <option value="Good">Good</option>
+                                        <option value="Poor">Poor</option>
+                                    </select>
+                                    <select
+                                        value={newBatterySafety.testedBy}
+                                        onChange={(e) => setNewBatterySafety({ ...newBatterySafety, testedBy: e.target.value })}
+                                        className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                    >
+                                        <option value="">Tested By</option>
+                                        {teamMembers.map(m => (<option key={m.id} value={m.name}>{m.name}</option>))}
+                                    </select>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newBatterySafety.date && newBatterySafety.testedItem && newBatterySafety.itemId && newBatterySafety.condition) {
+                                            const newData = [...batterySafetyData, newBatterySafety];
+                                            setBatterySafetyData(newData);
+                                            setNewBatterySafety({ date: '', testedItem: '', itemId: '', condition: '', testedBy: '' });
+                                            updateRecurringData(droneId, { batterySafety: newData });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Battery Safety Record
+                                </button>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 7. Operational Record */}
+                        <ChecklistItem
+                            title="7. Operational Record"
+                            description="Records of UIN transfer, linking UIN to serial number and transfers"
+                            icon={ClipboardList}
+                            isComplete={operationalRecords.length > 0}
+                        >
+                            <div className="overflow-x-auto">
+                                {operationalRecords.length > 0 && (
+                                    <table className="w-full text-sm text-left text-gray-400 mb-4">
+                                        <thead className="text-xs text-gray-500 uppercase bg-white/5">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-tl-lg">Date</th>
+                                                <th className="px-4 py-3">Operation</th>
+                                                <th className="px-4 py-3">UIN</th>
+                                                <th className="px-4 py-3">Details</th>
+                                                <th className="px-4 py-3 rounded-tr-lg">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {operationalRecords.map((row, index) => (
+                                                <tr key={index} className="border-b border-white/5 last:border-0">
+                                                    <td className="px-4 py-2">{row.date}</td>
+                                                    <td className="px-4 py-2">{row.operation}</td>
+                                                    <td className="px-4 py-2 font-mono">{row.uin}</td>
+                                                    <td className="px-4 py-2 font-mono">
+                                                        {row.operation === 'Linking UIN to Serial Number' && row.serialNumber}
+                                                        {row.operation === 'Transfer of UIN' && `To: ${row.transferredTo}`}
+                                                        {row.operation === 'UIN Issuance' && '-'}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const newData = operationalRecords.filter((_, i) => i !== index);
+                                                                setOperationalRecords(newData);
+                                                                updateRecurringData(droneId, { operationalRecords: newData });
+                                                            }}
+                                                            className="text-red-500 hover:text-red-400 transition-colors"
+                                                            title="Delete Record"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* Add New Form */}
+                                <div className="space-y-3 p-3 bg-white/5 rounded-lg mb-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <input
+                                            type="date"
+                                            value={newOperationalRecord.date}
+                                            onChange={(e) => setNewOperationalRecord({ ...newOperationalRecord, date: e.target.value })}
+                                            className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&::-webkit-calendar-picker-indicator]:invert"
+                                        />
+                                        <select
+                                            value={newOperationalRecord.operation}
+                                            onChange={(e) => setNewOperationalRecord({
+                                                ...newOperationalRecord,
+                                                operation: e.target.value,
+                                                uin: '',
+                                                serialNumber: '',
+                                                transferredTo: ''
+                                            })}
+                                            className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs [&>option]:bg-[#0f0f12]"
+                                        >
+                                            <option value="">Select Operation</option>
+                                            <option value="UIN Issuance">UIN Issuance</option>
+                                            <option value="Transfer of UIN">Transfer of UIN</option>
+                                            <option value="Linking UIN to Serial Number">Linking UIN to Serial Number</option>
+                                        </select>
+                                    </div>
+
+                                    {newOperationalRecord.operation && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="UIN Number"
+                                                value={newOperationalRecord.uin}
+                                                onChange={(e) => setNewOperationalRecord({ ...newOperationalRecord, uin: e.target.value })}
+                                                className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                            />
+                                            {newOperationalRecord.operation === 'Linking UIN to Serial Number' && (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Serial Number"
+                                                    value={newOperationalRecord.serialNumber}
+                                                    onChange={(e) => setNewOperationalRecord({ ...newOperationalRecord, serialNumber: e.target.value })}
+                                                    className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                                />
+                                            )}
+                                            {newOperationalRecord.operation === 'Transfer of UIN' && (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Transferred To"
+                                                    value={newOperationalRecord.transferredTo}
+                                                    onChange={(e) => setNewOperationalRecord({ ...newOperationalRecord, transferredTo: e.target.value })}
+                                                    className="bg-transparent border-b border-gray-700 outline-none text-white py-1 text-xs"
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (newOperationalRecord.date && newOperationalRecord.operation && newOperationalRecord.uin) {
+                                            const newData = [...operationalRecords, newOperationalRecord];
+                                            setOperationalRecords(newData);
+                                            setNewOperationalRecord({ date: '', operation: '', uin: '', serialNumber: '', transferredTo: '' });
+                                            updateRecurringData(droneId, { operationalRecords: newData });
+                                        }
+                                    }}
+                                    className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 py-2 rounded-lg text-xs font-semibold"
+                                >
+                                    + Add Operational Record
                                 </button>
                             </div>
                         </ChecklistItem>
@@ -1274,6 +1637,78 @@ export default function DroneProfilePage() {
                                     ) : (
                                         <tr>
                                             <td colSpan={5} className="border p-2 text-center text-gray-500 italic">No equipment maintenance records.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* Battery Safety Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Battery Safety</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/6">Tested Item</th>
+                                        <th className="border p-2 w-1/4">Item ID</th>
+                                        <th className="border p-2 w-1/6">Condition</th>
+                                        <th className="border p-2 w-1/4">Tested By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {batterySafetyData.length > 0 ? (
+                                        batterySafetyData.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date}</td>
+                                                <td className="border p-2 capitalize">{row.testedItem}</td>
+                                                <td className="border p-2 font-mono">{row.itemId}</td>
+                                                <td className={`border p-2 font-semibold ${row.condition === 'Excellent' ? 'text-green-700' :
+                                                        row.condition === 'Good' ? 'text-blue-700' : 'text-red-700'
+                                                    }`}>
+                                                    {row.condition}
+                                                </td>
+                                                <td className="border p-2">{row.testedBy}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="border p-2 text-center text-gray-500 italic">No battery safety records.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* Operational Record Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">7. Operational Record</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/4">Operation</th>
+                                        <th className="border p-2 w-1/4">UIN</th>
+                                        <th className="border p-2 w-1/3">Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {operationalRecords.length > 0 ? (
+                                        operationalRecords.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date}</td>
+                                                <td className="border p-2">{row.operation}</td>
+                                                <td className="border p-2 font-mono">{row.uin}</td>
+                                                <td className="border p-2 font-mono">
+                                                    {row.operation === 'Linking UIN to Serial Number' && `S/N: ${row.serialNumber}`}
+                                                    {row.operation === 'Transfer of UIN' && `To: ${row.transferredTo}`}
+                                                    {row.operation === 'UIN Issuance' && '-'}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No operational records.</td>
                                         </tr>
                                     )}
                                 </tbody>

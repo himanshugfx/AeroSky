@@ -11,12 +11,14 @@ import {
     ShieldCheck,
     ChevronRight,
     Bell,
+    BatteryCharging,
 } from "lucide-react";
 
 const menuItems = [
     { href: "/admin", label: "Drone Registry", icon: LayoutDashboard },
     { href: "/admin/team", label: "Organizational Manual", icon: Users },
     { href: "/admin/subcontractors", label: "Sub-contractors", icon: Wrench },
+    { href: "/admin/batteries", label: "Batteries", icon: BatteryCharging },
 ];
 
 export default function AdminLayout({
