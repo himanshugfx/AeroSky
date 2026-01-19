@@ -117,7 +117,7 @@ export default function SubcontractorsPage() {
                     {subcontractors.map((sub) => (
                         <div
                             key={sub.id}
-                            className="bg-[#0f0f12] border border-white/5 rounded-2xl p-6 group hover:border-white/10 transition-all"
+                            className="bg-[#0f0f12] border border-white/5 rounded-2xl p-4 sm:p-6 group hover:border-white/10 transition-all"
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-4">
@@ -136,7 +136,7 @@ export default function SubcontractorsPage() {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => openEditModal(sub)}
                                         className="w-8 h-8 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center transition-colors"

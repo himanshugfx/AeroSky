@@ -80,11 +80,11 @@ export default function MaintenancePage() {
 
             {/* Maintenance Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h2 className="text-lg font-semibold text-gray-900">Maintenance Logs</h2>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                         <Wrench className="w-4 h-4" />
                         Log Maintenance
                     </button>
@@ -149,82 +149,84 @@ export default function MaintenancePage() {
 
             {/* Log Maintenance Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                             <h2 className="text-xl font-bold text-gray-900">Log Maintenance Task</h2>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-                            {mutation.isError && (
-                                <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
-                                    <AlertIcon className="w-4 h-4" />
-                                    {(mutation.error as any)?.response?.data?.detail || 'Failed to log maintenance.'}
-                                </div>
-                            )}
+                        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                                {mutation.isError && (
+                                    <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
+                                        <AlertIcon className="w-4 h-4" />
+                                        {(mutation.error as any)?.response?.data?.detail || 'Failed to log maintenance.'}
+                                    </div>
+                                )}
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Select Drone</label>
-                                <select
-                                    {...register('drone_id')}
-                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.drone_id ? 'border-red-500' : 'border-gray-300'}`}
-                                >
-                                    <option value="">Select a drone</option>
-                                    {drones.map((drone: any) => (
-                                        <option key={drone.id} value={drone.id}>{drone.uin || drone.manufacturer_serial_number} ({drone.status})</option>
-                                    ))}
-                                </select>
-                                {errors.drone_id && <p className="text-red-500 text-xs mt-1">{errors.drone_id.message}</p>}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Task Type</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Drone</label>
                                     <select
-                                        {...register('maintenance_type')}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        {...register('drone_id')}
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.drone_id ? 'border-red-500' : 'border-gray-300'}`}
                                     >
-                                        <option value="Inspection">Inspection</option>
-                                        <option value="Repair">Repair</option>
-                                        <option value="Software_Update">Software Update</option>
-                                        <option value="Component_Replacement">Component Replacement</option>
+                                        <option value="">Select a drone</option>
+                                        {drones.map((drone: any) => (
+                                            <option key={drone.id} value={drone.id}>{drone.uin || drone.manufacturer_serial_number} ({drone.status})</option>
+                                        ))}
                                     </select>
+                                    {errors.drone_id && <p className="text-red-500 text-xs mt-1">{errors.drone_id.message}</p>}
                                 </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Task Type</label>
+                                        <select
+                                            {...register('maintenance_type')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        >
+                                            <option value="Inspection">Inspection</option>
+                                            <option value="Repair">Repair</option>
+                                            <option value="Software_Update">Software Update</option>
+                                            <option value="Component_Replacement">Component Replacement</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                        <input
+                                            type="date"
+                                            {...register('maintenance_date')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.maintenance_date ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.maintenance_date && <p className="text-red-500 text-xs mt-1">{errors.maintenance_date.message}</p>}
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Technician Name</label>
                                     <input
-                                        type="date"
-                                        {...register('maintenance_date')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.maintenance_date ? 'border-red-500' : 'border-gray-300'}`}
+                                        {...register('technician_name')}
+                                        placeholder="Enter your name"
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.technician_name ? 'border-red-500' : 'border-gray-300'}`}
                                     />
-                                    {errors.maintenance_date && <p className="text-red-500 text-xs mt-1">{errors.maintenance_date.message}</p>}
+                                    {errors.technician_name && <p className="text-red-500 text-xs mt-1">{errors.technician_name.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Work Description</label>
+                                    <textarea
+                                        {...register('description')}
+                                        rows={3}
+                                        placeholder="Describe the work performed..."
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                                    />
+                                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Technician Name</label>
-                                <input
-                                    {...register('technician_name')}
-                                    placeholder="Enter your name"
-                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.technician_name ? 'border-red-500' : 'border-gray-300'}`}
-                                />
-                                {errors.technician_name && <p className="text-red-500 text-xs mt-1">{errors.technician_name.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Work Description</label>
-                                <textarea
-                                    {...register('description')}
-                                    rows={3}
-                                    placeholder="Describe the work performed..."
-                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
-                                />
-                                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
+                            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}

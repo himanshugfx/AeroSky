@@ -118,11 +118,11 @@ export default function FlightsPage() {
 
             {/* Flight Plans Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h2 className="text-lg font-semibold text-gray-900">Flight Plans</h2>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                         <Play className="w-4 h-4" />
                         Create Flight Plan
                     </button>
@@ -189,94 +189,96 @@ export default function FlightsPage() {
 
             {/* Create Flight Plan Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                             <h2 className="text-xl font-bold text-gray-900">Create New Flight Plan</h2>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-                            {mutation.isError && (
-                                <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
-                                    <AlertIcon className="w-4 h-4" />
-                                    {(mutation.error as any)?.response?.data?.detail || 'Failed to create flight plan.'}
-                                </div>
-                            )}
+                        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                                {mutation.isError && (
+                                    <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
+                                        <AlertIcon className="w-4 h-4" />
+                                        {(mutation.error as any)?.response?.data?.detail || 'Failed to create flight plan.'}
+                                    </div>
+                                )}
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Drone</label>
-                                    <select
-                                        {...register('drone_id')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.drone_id ? 'border-red-500' : 'border-gray-300'}`}
-                                    >
-                                        <option value="">Select drone</option>
-                                        {drones.map((drone: any) => (
-                                            <option key={drone.id} value={drone.id}>{drone.uin || drone.manufacturer_serial_number}</option>
-                                        ))}
-                                    </select>
-                                    {errors.drone_id && <p className="text-red-500 text-xs mt-1">{errors.drone_id.message}</p>}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Drone</label>
+                                        <select
+                                            {...register('drone_id')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.drone_id ? 'border-red-500' : 'border-gray-300'}`}
+                                        >
+                                            <option value="">Select drone</option>
+                                            {drones.map((drone: any) => (
+                                                <option key={drone.id} value={drone.id}>{drone.uin || drone.manufacturer_serial_number}</option>
+                                            ))}
+                                        </select>
+                                        {errors.drone_id && <p className="text-red-500 text-xs mt-1">{errors.drone_id.message}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Pilot</label>
+                                        <select
+                                            {...register('pilot_id')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.pilot_id ? 'border-red-500' : 'border-gray-300'}`}
+                                        >
+                                            <option value="">Select pilot</option>
+                                            {pilots.map((pilot: any) => (
+                                                <option key={pilot.id} value={pilot.id}>{pilot.full_name}</option>
+                                            ))}
+                                        </select>
+                                        {errors.pilot_id && <p className="text-red-500 text-xs mt-1">{errors.pilot_id.message}</p>}
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Pilot</label>
-                                    <select
-                                        {...register('pilot_id')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.pilot_id ? 'border-red-500' : 'border-gray-300'}`}
-                                    >
-                                        <option value="">Select pilot</option>
-                                        {pilots.map((pilot: any) => (
-                                            <option key={pilot.id} value={pilot.id}>{pilot.full_name}</option>
-                                        ))}
-                                    </select>
-                                    {errors.pilot_id && <p className="text-red-500 text-xs mt-1">{errors.pilot_id.message}</p>}
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Planned Start</label>
+                                        <input
+                                            type="datetime-local"
+                                            {...register('planned_start')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.planned_start ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.planned_start && <p className="text-red-500 text-xs mt-1">{errors.planned_start.message}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Planned End</label>
+                                        <input
+                                            type="datetime-local"
+                                            {...register('planned_end')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.planned_end ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.planned_end && <p className="text-red-500 text-xs mt-1">{errors.planned_end.message}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Max Altitude (ft)</label>
+                                        <input
+                                            type="number"
+                                            {...register('max_altitude_ft')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.max_altitude_ft ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.max_altitude_ft && <p className="text-red-500 text-xs mt-1">{errors.max_altitude_ft.message}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                        <input
+                                            {...register('flight_purpose')}
+                                            placeholder="e.g. Survey, Training"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.flight_purpose ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.flight_purpose && <p className="text-red-500 text-xs mt-1">{errors.flight_purpose.message}</p>}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Planned Start</label>
-                                    <input
-                                        type="datetime-local"
-                                        {...register('planned_start')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.planned_start ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.planned_start && <p className="text-red-500 text-xs mt-1">{errors.planned_start.message}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Planned End</label>
-                                    <input
-                                        type="datetime-local"
-                                        {...register('planned_end')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.planned_end ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.planned_end && <p className="text-red-500 text-xs mt-1">{errors.planned_end.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Altitude (ft)</label>
-                                    <input
-                                        type="number"
-                                        {...register('max_altitude_ft')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.max_altitude_ft ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.max_altitude_ft && <p className="text-red-500 text-xs mt-1">{errors.max_altitude_ft.message}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-                                    <input
-                                        {...register('flight_purpose')}
-                                        placeholder="e.g. Survey, Training"
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.flight_purpose ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.flight_purpose && <p className="text-red-500 text-xs mt-1">{errors.flight_purpose.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
+                            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}

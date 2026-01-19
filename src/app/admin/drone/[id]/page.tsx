@@ -83,27 +83,27 @@ function ChecklistItem({
         <div className="bg-[#0f0f12] border border-white/5 rounded-xl overflow-hidden">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-4 flex items-center gap-3 text-left hover:bg-white/[0.02] transition-colors"
+                className="w-full p-3 sm:p-4 flex items-start sm:items-center gap-2 sm:gap-3 text-left hover:bg-white/[0.02] transition-colors"
                 style={{
                     borderLeft: `4px solid ${status?.color === 'yellow' ? '#EAB308' : status?.color === 'green' || isComplete ? '#22C55E' : 'transparent'}`
                 }}
             >
                 <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${statusBg}`}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 ${statusBg}`}
                 >
-                    <Icon className={`w-5 h-5 ${statusText}`} />
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${statusText}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-white text-sm">{title}</h3>
-                        <span className={`flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${statusBg} ${statusText}`}>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <h3 className="font-semibold text-white text-xs sm:text-sm">{title}</h3>
+                        <span className={`flex items-center gap-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${statusBg} ${statusText}`}>
                             {statusIcon} {statusLabel}
                         </span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate">{description}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">{description}</p>
                 </div>
                 {isOpen ? (
-                    <Check className="w-4 h-4 text-gray-500 shrink-0 opacity-0" /> /* Spacer to keep alignment */
+                    <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" />
                 ) : (
                     <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />
                 )}
@@ -248,10 +248,10 @@ export default function DroneProfilePage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-0">
             <div className="print:hidden">
                 {/* Back Button & Header */}
-                <div className="flex items-center gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-8">
                     <button
                         onClick={() => router.back()}
                         className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-colors"
@@ -263,16 +263,16 @@ export default function DroneProfilePage() {
                             <img
                                 src={drone.image}
                                 alt={drone.modelName}
-                                className="w-16 h-16 rounded-2xl object-cover"
+                                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl object-cover"
                             />
                         ) : (
-                            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center">
-                                <Plane className="w-8 h-8 text-gray-600" />
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/5 rounded-2xl flex items-center justify-center">
+                                <Plane className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" />
                             </div>
                         )}
                         <div>
-                            <h1 className="text-2xl font-bold text-white">{drone.modelName}</h1>
-                            <p className="text-sm text-gray-500 uppercase font-bold tracking-widest">
+                            <h1 className="text-xl sm:text-2xl font-bold text-white">{drone.modelName}</h1>
+                            <p className="text-[10px] sm:text-sm text-gray-500 uppercase font-bold tracking-widest">
                                 DGCA Type Certified
                             </p>
                         </div>
@@ -290,25 +290,25 @@ export default function DroneProfilePage() {
                             if (el) el.classList.toggle('hidden');
                             if (icon) icon.classList.toggle('rotate-180');
                         }}
-                        className="w-full p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                        className="w-full p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-white/[0.02] transition-colors gap-4"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
                                 <Check className="w-5 h-5 text-blue-500" />
                             </div>
                             <div className="text-left">
-                                <h2 className="text-lg font-bold text-white">One Time Checklist</h2>
-                                <p className="text-sm text-gray-500">Complete these items once for certification</p>
+                                <h2 className="text-lg font-bold text-white leading-tight">One Time Checklist</h2>
+                                <p className="text-xs sm:text-sm text-gray-500">Complete these items once for certification</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleDownloadPDF('one-time');
                                 }}
-                                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] text-sm"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] text-sm whitespace-nowrap"
                             >
                                 <Download className="w-4 h-4" />
                                 Download PDF
@@ -381,18 +381,18 @@ export default function DroneProfilePage() {
                             {teamMembers.length > 0 ? (
                                 <div className="space-y-4">
                                     <p className="text-sm text-gray-400">Select an Accountable Manager:</p>
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {teamMembers.map((m) => (
                                             <button
                                                 key={m.id}
                                                 onClick={() => assignAccountableManager(droneId, m.id)}
-                                                className={`p-4 rounded-xl text-left transition-all ${drone.accountableManagerId === m.id
+                                                className={`p-3 sm:p-4 rounded-xl text-left transition-all ${drone.accountableManagerId === m.id
                                                     ? "bg-blue-600/20 border-2 border-blue-500"
                                                     : "bg-white/5 border border-white/10 hover:border-white/20"
                                                     }`}
                                             >
-                                                <p className="font-medium text-white">{m.name}</p>
-                                                <p className="text-xs text-gray-500">{m.position}</p>
+                                                <p className="font-medium text-white text-sm sm:text-base">{m.name}</p>
+                                                <p className="text-[10px] sm:text-xs text-gray-500">{m.position}</p>
                                             </button>
                                         ))}
                                     </div>
@@ -711,25 +711,25 @@ export default function DroneProfilePage() {
                             if (el) el.classList.toggle('hidden');
                             if (icon) icon.classList.toggle('rotate-180');
                         }}
-                        className="w-full p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                        className="w-full p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-white/[0.02] transition-colors gap-4"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
                                 <Check className="w-5 h-5 text-purple-500" />
                             </div>
                             <div className="text-left">
-                                <h2 className="text-lg font-bold text-white">Recurring Checklist</h2>
-                                <p className="text-sm text-gray-500">Periodic maintenance and compliance checks</p>
+                                <h2 className="text-lg font-bold text-white leading-tight">Recurring Checklist</h2>
+                                <p className="text-xs sm:text-sm text-gray-500">Periodic maintenance and compliance checks</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleDownloadPDF('recurring');
                                 }}
-                                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] text-sm"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] text-sm whitespace-nowrap"
                             >
                                 <Download className="w-4 h-4" />
                                 Download PDF

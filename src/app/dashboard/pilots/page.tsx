@@ -79,11 +79,11 @@ export default function PilotsPage() {
 
             {/* Pilots Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h2 className="text-lg font-semibold text-gray-900">Registered Pilots</h2>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        className="w-full sm:auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                         <UserPlus className="w-4 h-4" />
                         Add Pilot
                     </button>
@@ -145,104 +145,106 @@ export default function PilotsPage() {
 
             {/* Add Pilot Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                             <h2 className="text-xl font-bold text-gray-900">Register New Pilot</h2>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-                            {mutation.isError && (
-                                <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
-                                    <AlertCircle className="w-4 h-4" />
-                                    {(mutation.error as any)?.response?.data?.detail || 'Failed to register pilot.'}
-                                </div>
-                            )}
+                        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                                {mutation.isError && (
+                                    <div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 text-sm">
+                                        <AlertCircle className="w-4 h-4" />
+                                        {(mutation.error as any)?.response?.data?.detail || 'Failed to register pilot.'}
+                                    </div>
+                                )}
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input
-                                        {...register('full_name')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.full_name ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input
+                                            {...register('full_name')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.full_name ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                        <input
+                                            type="date"
+                                            {...register('date_of_birth')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.date_of_birth ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.date_of_birth && <p className="text-red-500 text-xs mt-1">{errors.date_of_birth.message}</p>}
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                                    <input
-                                        type="date"
-                                        {...register('date_of_birth')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.date_of_birth ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.date_of_birth && <p className="text-red-500 text-xs mt-1">{errors.date_of_birth.message}</p>}
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">ID Type</label>
+                                        <select
+                                            {...register('primary_id_type')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        >
+                                            <option value="Aadhaar">Aadhaar</option>
+                                            <option value="Passport">Passport</option>
+                                            <option value="Voter_ID">Voter ID</option>
+                                            <option value="Driving_License">Driving License</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                                        <input
+                                            {...register('primary_id_number')}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.primary_id_number ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        {errors.primary_id_number && <p className="text-red-500 text-xs mt-1">{errors.primary_id_number.message}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                        <select
+                                            {...register('category_rating')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        >
+                                            <option value="Rotary_Wing">Rotary Wing</option>
+                                            <option value="Fixed_Wing">Fixed Wing</option>
+                                            <option value="Hybrid_Vertical_Take_Off_and_Landing">Hybrid VTOL</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                                        <select
+                                            {...register('class_rating')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        >
+                                            <option value="Nano">Nano</option>
+                                            <option value="Micro">Micro</option>
+                                            <option value="Small">Small</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Large">Large</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                                        <select
+                                            {...register('operation_rating')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        >
+                                            <option value="VLOS">VLOS</option>
+                                            <option value="BVLOS">BVLOS</option>
+                                            <option value="Night">Night</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Type</label>
-                                    <select
-                                        {...register('primary_id_type')}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    >
-                                        <option value="Aadhaar">Aadhaar</option>
-                                        <option value="Passport">Passport</option>
-                                        <option value="Voter_ID">Voter ID</option>
-                                        <option value="Driving_License">Driving License</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
-                                    <input
-                                        {...register('primary_id_number')}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${errors.primary_id_number ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                    {errors.primary_id_number && <p className="text-red-500 text-xs mt-1">{errors.primary_id_number.message}</p>}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                    <select
-                                        {...register('category_rating')}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    >
-                                        <option value="Rotary_Wing">Rotary Wing</option>
-                                        <option value="Fixed_Wing">Fixed Wing</option>
-                                        <option value="Hybrid_Vertical_Take_Off_and_Landing">Hybrid VTOL</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                                    <select
-                                        {...register('class_rating')}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    >
-                                        <option value="Nano">Nano</option>
-                                        <option value="Micro">Micro</option>
-                                        <option value="Small">Small</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Large">Large</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-                                    <select
-                                        {...register('operation_rating')}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    >
-                                        <option value="VLOS">VLOS</option>
-                                        <option value="BVLOS">BVLOS</option>
-                                        <option value="Night">Night</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
+                            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
@@ -265,4 +267,3 @@ export default function PilotsPage() {
         </div>
     )
 }
-

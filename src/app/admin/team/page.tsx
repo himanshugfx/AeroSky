@@ -110,11 +110,11 @@ export default function TeamPage() {
                     {teamMembers.map((member) => (
                         <div
                             key={member.id}
-                            className="bg-[#0f0f12] border border-white/5 rounded-2xl p-6 flex items-center gap-6 group hover:border-white/10 transition-all"
+                            className="bg-[#0f0f12] border border-white/5 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group hover:border-white/10 transition-all"
                         >
                             {/* Avatar */}
-                            <div className="w-14 h-14 bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 rounded-2xl flex items-center justify-center shrink-0">
-                                <User className="w-7 h-7 text-blue-500" />
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 rounded-2xl flex items-center justify-center shrink-0">
+                                <User className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
                             </div>
 
                             {/* Info */}
@@ -157,7 +157,7 @@ export default function TeamPage() {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-row sm:flex-col lg:flex-row items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex flex-row sm:flex-col lg:flex-row items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity w-full sm:w-auto justify-end sm:justify-start pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5 sm:border-none">
                                 <button
                                     onClick={() => openEditModal(member)}
                                     className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-colors"
