@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { PDFDocument } from 'pdf-lib';
 
 export async function GET(request: Request) {
     try {
@@ -186,8 +187,44 @@ export async function GET(request: Request) {
                     doc.text('Aerosys Aviation India - Official Technical Document', 105, 290, { align: 'center' });
                 }
 
-                const pdfBuffer = doc.output('arraybuffer');
-                return new NextResponse(new Uint8Array(pdfBuffer), {
+                const specSheetBuffer = doc.output('arraybuffer');
+
+                // If COC data exists, merge it
+                if (order.cocData) {
+                    try {
+                        console.log('COC data found, merging...');
+                        const mainPdfDoc = await PDFDocument.load(specSheetBuffer);
+
+                        // Extract base64 content
+                        const cocBase64 = order.cocData.split(',')[1] || order.cocData;
+                        const cocPdfDoc = await PDFDocument.load(Buffer.from(cocBase64, 'base64'));
+
+                        // Copy pages from COC to main PDF
+                        const cocPages = await mainPdfDoc.copyPages(cocPdfDoc, cocPdfDoc.getPageIndices());
+                        cocPages.forEach(page => mainPdfDoc.addPage(page));
+
+                        const mergedPdfBytes = await mainPdfDoc.save();
+                        return new NextResponse(Buffer.from(mergedPdfBytes), {
+                            status: 200,
+                            headers: {
+                                'Content-Type': 'application/pdf',
+                                'Content-Disposition': `attachment; filename="Order_${order.contractNumber}.pdf"`,
+                            },
+                        });
+                    } catch (mergeErr) {
+                        console.error('Error merging COC PDF:', mergeErr);
+                        // If merge fails, return just the spec sheet as fallback
+                        return new NextResponse(Buffer.from(specSheetBuffer), {
+                            status: 200,
+                            headers: {
+                                'Content-Type': 'application/pdf',
+                                'Content-Disposition': `attachment; filename="Order_${order.contractNumber}_SpecOnly.pdf"`,
+                            },
+                        });
+                    }
+                }
+
+                return new NextResponse(Buffer.from(specSheetBuffer), {
                     status: 200,
                     headers: {
                         'Content-Type': 'application/pdf',

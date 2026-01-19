@@ -76,6 +76,7 @@ export interface Order {
     manufacturingStage: string;
     calibrationTestLogs?: string;
     afterSalesAmc?: string;
+    cocData?: string;
     createdAt: string;
     updatedAt: string;
 }

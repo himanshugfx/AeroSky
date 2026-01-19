@@ -70,6 +70,7 @@ export async function POST(request: Request) {
                 manufacturingStage: manufacturingStage || 'In Design',
                 calibrationTestLogs,
                 afterSalesAmc,
+                cocData: body.cocData,
             },
         });
 
