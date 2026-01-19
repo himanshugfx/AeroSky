@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -14,7 +14,9 @@ import {
     FileText,
     Settings,
     LogOut,
-    Bell
+    Bell,
+    Menu,
+    X,
 } from 'lucide-react'
 import { useAuthStore } from '@/lib/store'
 
@@ -32,6 +34,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const router = useRouter()
     const pathname = usePathname()
     const { user, isAuthenticated, _hydrated, logout } = useAuthStore()
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+    useEffect(() => {
+        setIsMobileMenuOpen(false)
+    }, [pathname])
 
     useEffect(() => {
         if (_hydrated && !isAuthenticated) {
@@ -53,17 +60,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-[40] lg:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 fixed h-full">
-                <div className="p-6 border-b border-gray-200">
+            <aside className={`
+                fixed lg:sticky top-0 left-0 w-64 bg-white border-r border-gray-200 h-screen z-[50] transition-transform duration-300 transform lg:translate-x-0
+                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
+                <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                     <Link href="/dashboard" className="flex items-center gap-2 text-blue-900">
                         <Shield className="w-8 h-8 text-amber-500" />
                         <span className="text-xl font-bold tracking-tight">Aerosys</span>
                     </Link>
+                    <button
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="lg:hidden p-2 text-gray-500 hover:text-gray-900"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
                 </div>
 
-                <nav className="p-4 space-y-1">
+                <nav className="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)]">
                     {navigation.map((item) => {
                         const isActive = pathname === item.href
                         return (
@@ -82,9 +106,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     })}
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                             <span className="text-blue-700 font-medium">
                                 {user?.full_name?.charAt(0) || 'U'}
                             </span>
@@ -109,11 +133,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 ml-64">
+            <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Bar */}
-                <header className="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-xl font-semibold text-gray-900">
+                <header className="bg-white border-b border-gray-200 px-4 lg:px-8 py-4 flex justify-between items-center sticky top-0 z-30">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="lg:hidden p-2 text-gray-500 hover:text-gray-900"
+                        >
+                            <Menu className="w-6 h-6" />
+                        </button>
+                        <h1 className="text-lg md:text-xl font-semibold text-gray-900 truncate">
                             {navigation.find(n => n.href === pathname)?.name || 'Dashboard'}
                         </h1>
                     </div>
@@ -126,7 +156,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </header>
 
                 {/* Page Content */}
-                <main className="p-8">
+                <main className="p-4 lg:p-8">
                     {children}
                 </main>
             </div>

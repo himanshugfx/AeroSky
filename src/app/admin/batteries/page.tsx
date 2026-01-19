@@ -49,7 +49,7 @@ export default function BatteriesPage() {
     return (
         <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-white">Battery Management</h1>
                     <p className="text-sm text-gray-500">
@@ -58,7 +58,7 @@ export default function BatteriesPage() {
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
                 >
                     <Plus className="w-5 h-5" />
                     Add Battery Pair
@@ -120,10 +120,10 @@ export default function BatteriesPage() {
                                 />
                             </div>
                         </div>
-                        <div className="flex gap-3 pt-2">
+                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             <button
                                 type="submit"
-                                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-colors"
+                                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/20"
                             >
                                 Add Battery Pair
                             </button>
@@ -133,7 +133,7 @@ export default function BatteriesPage() {
                                     setShowForm(false);
                                     setFormData({ model: "", ratedCapacity: "", batteryNumberA: "", batteryNumberB: "" });
                                 }}
-                                className="px-6 py-3 bg-white/5 hover:bg-white/10 text-gray-400 rounded-xl transition-colors"
+                                className="px-6 py-4 bg-white/5 hover:bg-white/10 text-gray-400 rounded-xl transition-colors sm:w-auto w-full"
                             >
                                 Cancel
                             </button>

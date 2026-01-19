@@ -106,7 +106,7 @@ export default function DronesPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="text-2xl font-bold text-gray-900">Drone Registry</h1>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button
                         onClick={() => setIsModelModalOpen(true)}
                         className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
@@ -139,16 +139,16 @@ export default function DronesPage() {
             </div>
 
             {/* Table */}
-            <div className="card overflow-hidden">
+            <div className="card overflow-x-auto">
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UIN / Serial</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Insurance</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Flight</th>
-                            <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">UIN / Serial</th>
+                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Model</th>
+                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Status</th>
+                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Insurance</th>
+                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Last Flight</th>
+                            <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -318,7 +318,7 @@ export default function DronesPage() {
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Model Name</label>
                                     <input
@@ -339,7 +339,7 @@ export default function DronesPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                                     <select

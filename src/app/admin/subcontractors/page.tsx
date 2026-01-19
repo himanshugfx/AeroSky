@@ -93,18 +93,18 @@ export default function SubcontractorsPage() {
     return (
         <div>
             {/* Header */}
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
                         Sub-contractors Agreement
                     </h1>
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 text-sm">
                         Design and manufacturing sub-contractors list
                     </p>
                 </div>
                 <button
                     onClick={openAddModal}
-                    className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
                 >
                     <Plus className="w-5 h-5" />
                     Add Subcontractor
@@ -128,8 +128,8 @@ export default function SubcontractorsPage() {
                                         <h3 className="font-bold text-white text-lg">{sub.companyName}</h3>
                                         <span
                                             className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${sub.type === "Design"
-                                                    ? "bg-purple-500/20 text-purple-400"
-                                                    : "bg-green-500/20 text-green-400"
+                                                ? "bg-purple-500/20 text-purple-400"
+                                                : "bg-green-500/20 text-green-400"
                                                 }`}
                                         >
                                             {sub.type}
@@ -152,21 +152,21 @@ export default function SubcontractorsPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                 <div className="flex items-center gap-2 text-gray-400">
-                                    <User className="w-4 h-4" />
-                                    <span>{sub.contactPerson}</span>
+                                    <User className="w-4 h-4 shrink-0" />
+                                    <span className="truncate">{sub.contactPerson}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-gray-400">
-                                    <Calendar className="w-4 h-4" />
+                                    <Calendar className="w-4 h-4 shrink-0" />
                                     <span>{sub.agreementDate}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-gray-400">
-                                    <Mail className="w-4 h-4" />
+                                    <Mail className="w-4 h-4 shrink-0" />
                                     <span className="truncate">{sub.contactEmail}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-gray-400">
-                                    <Phone className="w-4 h-4" />
+                                    <Phone className="w-4 h-4 shrink-0" />
                                     <span>{sub.contactPhone}</span>
                                 </div>
                             </div>
@@ -196,22 +196,22 @@ export default function SubcontractorsPage() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
                     <div
                         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                         onClick={() => setShowModal(false)}
                     />
 
-                    <div className="relative bg-[#0f0f12] border border-white/10 rounded-3xl w-full max-w-lg p-8 shadow-2xl">
+                    <div className="relative bg-[#0f0f12] border-x border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl w-full max-w-lg shadow-2xl h-[90vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col mt-auto sm:mt-0">
                         <button
                             onClick={() => setShowModal(false)}
-                            className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
+                            className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors z-10"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-orange-600/20 rounded-2xl flex items-center justify-center">
+                        <div className="flex items-center gap-4 p-8 pb-4 border-b border-white/5">
+                            <div className="w-12 h-12 bg-orange-600/20 rounded-2xl flex items-center justify-center shrink-0">
                                 <Building2 className="w-6 h-6 text-orange-500" />
                             </div>
                             <div>
@@ -224,105 +224,110 @@ export default function SubcontractorsPage() {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div>
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                    Company Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
-                                    placeholder="Acme Manufacturing Ltd."
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
-                                    required
-                                />
-                            </div>
+                        <div className="p-8 overflow-y-auto flex-1">
+                            <form onSubmit={handleSubmit} id="sub-form" className="space-y-5 pb-4">
+                                <div>
+                                    <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+                                        Company Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        placeholder="Acme Manufacturing Ltd."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                                        required
+                                    />
+                                </div>
 
-                            <div>
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                    Type
-                                </label>
-                                <div className="flex gap-4">
-                                    {(["Design", "Manufacturing"] as const).map((t) => (
-                                        <button
-                                            key={t}
-                                            type="button"
-                                            onClick={() => setType(t)}
-                                            className={`flex-1 py-3 rounded-xl font-medium transition-all ${type === t
+                                <div>
+                                    <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+                                        Type
+                                    </label>
+                                    <div className="flex gap-4">
+                                        {(["Design", "Manufacturing"] as const).map((t) => (
+                                            <button
+                                                key={t}
+                                                type="button"
+                                                onClick={() => setType(t)}
+                                                className={`flex-1 py-3 rounded-xl font-medium transition-all ${type === t
                                                     ? "bg-blue-600 text-white"
                                                     : "bg-white/5 text-gray-400 hover:bg-white/10"
-                                                }`}
-                                        >
-                                            {t}
-                                        </button>
-                                    ))}
+                                                    }`}
+                                            >
+                                                {t}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                    Contact Person
-                                </label>
-                                <input
-                                    type="text"
-                                    value={contactPerson}
-                                    onChange={(e) => setContactPerson(e.target.value)}
-                                    placeholder="Jane Smith"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
-                                    required
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                        Email
+                                        Contact Person
                                     </label>
                                     <input
-                                        type="email"
-                                        value={contactEmail}
-                                        onChange={(e) => setContactEmail(e.target.value)}
-                                        placeholder="jane@acme.com"
+                                        type="text"
+                                        value={contactPerson}
+                                        onChange={(e) => setContactPerson(e.target.value)}
+                                        placeholder="Jane Smith"
                                         className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
                                         required
                                     />
                                 </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+                                            Email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={contactEmail}
+                                            onChange={(e) => setContactEmail(e.target.value)}
+                                            placeholder="jane@acme.com"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+                                            Phone
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={contactPhone}
+                                            onChange={(e) => setContactPhone(e.target.value)}
+                                            placeholder="+91 98765 43210"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                        Phone
+                                        Agreement Date
                                     </label>
                                     <input
-                                        type="tel"
-                                        value={contactPhone}
-                                        onChange={(e) => setContactPhone(e.target.value)}
-                                        placeholder="+91 98765 43210"
+                                        type="date"
+                                        value={agreementDate}
+                                        onChange={(e) => setAgreementDate(e.target.value)}
                                         className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
                                         required
                                     />
                                 </div>
-                            </div>
+                            </form>
+                        </div>
 
-                            <div>
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
-                                    Agreement Date
-                                </label>
-                                <input
-                                    type="date"
-                                    value={agreementDate}
-                                    onChange={(e) => setAgreementDate(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
-                                    required
-                                />
-                            </div>
-
+                        <div className="p-8 border-t border-white/5 bg-[#0f0f12]">
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
+                                form="sub-form"
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
                             >
                                 {editing ? "Update Subcontractor" : "Add Subcontractor"}
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}

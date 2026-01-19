@@ -14,35 +14,35 @@ export default function HomePage() {
         <div className="min-h-screen">
             {/* Hero Section */}
             <header className="dgca-header text-white">
-                <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+                <nav className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <Shield className="w-8 h-8 text-amber-500" />
-                        <span className="text-xl font-bold tracking-tight">Aerosys Aviation</span>
+                        <span className="text-lg md:text-xl font-bold tracking-tight">Aerosys Aviation</span>
                     </div>
-                    <div className="flex gap-4">
-                        <Link href="/login" className="px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <div className="flex gap-2 md:gap-4">
+                        <Link href="/login" className="px-3 md:px-4 py-2 hover:bg-white/10 rounded-lg transition-colors text-sm md:text-base">
                             Login
                         </Link>
-                        <Link href="/register" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded-lg font-medium transition-colors">
+                        <Link href="/register" className="px-3 md:px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded-lg font-medium transition-colors text-sm md:text-base">
                             Register
                         </Link>
                     </div>
                 </nav>
 
-                <div className="container mx-auto px-6 py-20 text-center">
-                    <h1 className="text-6xl font-extrabold mb-6 tracking-tight">
-                        Transforming Industries Through <br /><span className="text-amber-500">Advanced Drone Solutions</span>
+                <div className="container mx-auto px-4 md:px-6 py-12 md:py-24 text-center">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 tracking-tight leading-tight">
+                        Transforming Industries <br className="hidden md:block" />Through <span className="text-amber-500">Advanced Drone Solutions</span>
                     </h1>
-                    <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-10 leading-relaxed text-balance">
+                    <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto mb-10 leading-relaxed text-balance">
                         Aerosys Aviation India Private Limited is an IIT Kanpur-incubated company
                         specializing in DGCA Type Certified UAV manufacturing and cutting-edge
                         aerial intelligence for the future.
                     </p>
-                    <div className="flex gap-4 justify-center">
-                        <Link href="/register" className="px-8 py-4 bg-amber-500 hover:bg-amber-600 rounded-lg font-bold text-lg flex items-center gap-2 transition-all hover:scale-105 shadow-xl shadow-amber-500/20">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <Link href="/register" className="w-full sm:w-auto px-8 py-4 bg-amber-500 hover:bg-amber-600 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-xl shadow-amber-500/20">
                             Get Started <ArrowRight className="w-5 h-5" />
                         </Link>
-                        <Link href="/docs" className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-lg font-bold text-lg transition-all">
+                        <Link href="/docs" className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-lg font-bold text-lg transition-all text-center">
                             Explore Products
                         </Link>
                     </div>
@@ -200,7 +200,7 @@ export default function HomePage() {
                     </div>
                 </div>
             </footer>
-        </div>
+        </div >
     )
 }
 
