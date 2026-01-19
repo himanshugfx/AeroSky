@@ -37,9 +37,9 @@ export async function GET(request: Request) {
                 const doc = new jsPDF();
 
                 // PDF Styles & Colors
-                const primaryColor = [0, 0, 0]; // Black as requested
-                const secondaryColor = [71, 85, 105];
-                const accentColor = [59, 130, 246];
+                const primaryColor: [number, number, number] = [0, 0, 0]; // Black as requested
+                const secondaryColor: [number, number, number] = [71, 85, 105];
+                const accentColor: [number, number, number] = [59, 130, 246];
 
                 // Header
                 doc.setFillColor(0, 0, 0);
