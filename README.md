@@ -66,7 +66,7 @@ Access:
 ## Project Structure
 
 ```
-AeroSky/
+AerosysAviation/
 ├── frontend/
 │   ├── src/
 │   │   ├── app/                    # Next.js pages

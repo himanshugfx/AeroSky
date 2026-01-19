@@ -33,7 +33,7 @@ export const authOptions = {
                 return {
                     id: user.id,
                     name: user.username,
-                    email: user.username + "@aerosky.com", // Placeholder
+                    email: user.username + "@aerosysaviation.com", // Placeholder
                     role: "admin", // Default role for now, can be expanded if User table has role
                 };
             }

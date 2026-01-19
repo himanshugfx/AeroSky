@@ -1407,7 +1407,7 @@ export default function DroneProfilePage() {
                     <>
                         <div className="text-center mb-8 border-b-2 border-black pb-4">
                             <h1 className="text-3xl font-bold uppercase tracking-wider">{drone.modelName}</h1>
-                            <p className="text-sm text-gray-600">DGCA Compliance Checklist Report</p>
+                            <p className="text-sm font-bold text-gray-800">Aerosys Aviation India - DGCA Compliance Checklist Report</p>
                             <p className="text-xs text-gray-400 mt-1">Generated: {new Date().toLocaleDateString()}</p>
                         </div>
 
@@ -1473,11 +1473,43 @@ export default function DroneProfilePage() {
                                         ))}
                                     </div>
                                 </div>
+                                {uploads.infrastructureOthers.length > 0 && (
+                                    <div className="mb-4 text-xs">
+                                        <h3 className="font-bold text-sm mb-2 text-black">Other Facilities</h3>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {uploads.infrastructureOthers.map((item, i) => (
+                                                <div key={i} className="border p-1">
+                                                    <img src={item.image} className="w-full h-24 object-cover mb-1" alt={item.label} />
+                                                    <p className="text-center font-bold text-[8px] uppercase">{item.label}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+
+                            {/* Subcontractors */}
+                            <section className="break-inside-avoid">
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Sub-contractor Agreements</h2>
+                                {subcontractors.length > 0 ? (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {subcontractors.map((s) => (
+                                            <div key={s.id} className="border p-2 rounded">
+                                                <p className="font-bold">{s.companyName}</p>
+                                                <p className="text-xs uppercase text-gray-600 font-bold">{s.type} Partner</p>
+                                                <p className="text-xs mt-1">Contact: {s.contactPerson}</p>
+                                                <p className="text-[10px] text-gray-500">Agreement Date: {s.agreementDate}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No sub-contractors registered.</p>
+                                )}
                             </section>
 
                             {/* Regulatory Display */}
                             <section className="break-inside-avoid">
-                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Regulatory Diplay & Security</h2>
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Regulatory Display & Security</h2>
                                 <div className="grid grid-cols-3 gap-2">
                                     {uploads.regulatoryDisplay.map((img: string, i: number) => (
                                         <img key={i} src={img} className="w-full h-32 object-cover border" alt="Regulatory" />
@@ -1490,7 +1522,7 @@ export default function DroneProfilePage() {
 
                             {/* Units */}
                             <section className="break-inside-avoid">
-                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Manufactured Units</h2>
+                                <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">7. Manufactured Units</h2>
                                 <table className="w-full text-sm text-left border">
                                     <thead className="bg-gray-100 uppercase text-xs">
                                         <tr>
@@ -1519,13 +1551,13 @@ export default function DroneProfilePage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-8 border-b-2 border-black pb-4">
                             <h1 className="text-3xl font-bold uppercase tracking-wider">{drone.modelName}</h1>
-                            <p className="text-sm text-gray-600">Recurring Compliance Report</p>
+                            <p className="text-sm font-bold text-gray-800">Aerosys Aviation India - Recurring Compliance Report</p>
                             <p className="text-xs text-gray-400 mt-1">Generated: {new Date().toLocaleDateString()}</p>
                         </div>
 
                         {/* Personnel Management Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">2. Personnel Management</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">1. Personnel Management</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
@@ -1556,7 +1588,7 @@ export default function DroneProfilePage() {
 
                         {/* Staff Competence Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">3. Staff Competence</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">2. Staff Competence</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
@@ -1591,7 +1623,7 @@ export default function DroneProfilePage() {
 
                         {/* Training Records Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">4. Training Record</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">3. Training Record</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
@@ -1625,7 +1657,7 @@ export default function DroneProfilePage() {
 
                         {/* Equipment Maintenance Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Equipment Maintenance</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">4. Equipment Maintenance</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
@@ -1658,7 +1690,7 @@ export default function DroneProfilePage() {
 
                         {/* Battery Safety Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Battery Safety</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">5. Battery Safety</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>
@@ -1695,7 +1727,7 @@ export default function DroneProfilePage() {
 
                         {/* Operational Record Section in Print */}
                         <section className="break-inside-avoid mb-8">
-                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">7. Operational Record</h2>
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">6. Operational Record</h2>
                             <table className="w-full text-sm text-left border collapse">
                                 <thead className="bg-gray-100 uppercase text-xs">
                                     <tr>

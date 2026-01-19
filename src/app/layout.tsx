@@ -6,7 +6,7 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'AeroSky India - Drone Compliance Platform',
+    title: 'Aerosys Aviation India - Drone Compliance Platform',
     description: 'DGCA Regulatory Compliance Engine for Drone Operations',
 }
 

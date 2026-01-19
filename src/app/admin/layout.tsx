@@ -67,7 +67,7 @@ export default function AdminLayout({
                                 <ShieldCheck className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h2 className="font-bold text-lg tracking-tight leading-none">AeroSky</h2>
+                                <h2 className="font-bold text-lg tracking-tight leading-none">Aerosys Aviation</h2>
                                 <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">
                                     DGCA Compliance
                                 </span>
@@ -116,7 +116,7 @@ export default function AdminLayout({
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-sm font-bold truncate">Administrator</p>
-                            <p className="text-xs text-gray-500 truncate">admin@aerosky.com</p>
+                            <p className="text-xs text-gray-500 truncate">admin@aerosysaviation.com</p>
                         </div>
                     </div>
                     <button

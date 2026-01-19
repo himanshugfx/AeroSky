@@ -81,7 +81,7 @@ export default function DocsPage() {
 
                             <div className="bg-gray-900 text-gray-100 rounded-lg p-6 font-mono text-sm overflow-x-auto">
                                 <pre>{`┌─────────────────────────────────────────────────────────────┐
-│                      AeroSky INDIA                          │
+│                    Aerosys Aviation INDIA                   │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
@@ -254,7 +254,7 @@ psql aerosys_aviation < database/schema.sql`} />
                         {/* Compliance */}
                         <Section id="compliance" title="Regulatory Compliance" icon={CheckCircle}>
                             <p className="text-gray-600 mb-6">
-                                AeroSky India is designed to ensure full compliance with Indian drone regulations.
+                                Aerosys Aviation India is designed to ensure full compliance with Indian drone regulations.
                                 Here&apos;s how the platform addresses key regulatory requirements:
                             </p>
 

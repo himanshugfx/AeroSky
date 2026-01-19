@@ -566,7 +566,7 @@ export default function OrdersPage() {
                                                 type="text"
                                                 value={formData.droneModel}
                                                 onChange={(e) => setFormData({ ...formData, droneModel: e.target.value })}
-                                                placeholder="e.g., AeroSky X1"
+                                                placeholder="e.g., Aerosys Aviation X1"
                                                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50"
                                             />
                                         </div>
