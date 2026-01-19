@@ -183,7 +183,7 @@ export async function GET(request: Request) {
                     doc.setFontSize(8);
                     doc.setTextColor(150, 150, 150);
                     doc.text(`Generated on ${new Date().toLocaleString()} | Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
-                    doc.text('AeroSky India - Official Technical Document', 105, 290, { align: 'center' });
+                    doc.text('Aerosys Aviation India - Official Technical Document', 105, 290, { align: 'center' });
                 }
 
                 const pdfBuffer = doc.output('arraybuffer');
