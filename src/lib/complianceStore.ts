@@ -48,6 +48,38 @@ export interface Battery {
     createdAt: string;
 }
 
+export interface Order {
+    id: string;
+    // Core Order & Financial Information
+    contractNumber: string;
+    clientName: string;
+    clientSegment: string;
+    orderDate: string;
+    estimatedCompletionDate?: string;
+    contractValue: number;
+    currency: string;
+    revenueRecognitionStatus: string;
+    // Technical & Configuration Details
+    droneModel: string;
+    droneType: string;
+    weightClass: string;
+    payloadConfiguration?: string;
+    flightEnduranceRequirements?: string;
+    softwareAiTier?: string;
+    // Regulatory & Compliance Tracking
+    dgcaFaaCertificationStatus: string;
+    uin?: string;
+    exportLicenseStatus?: string;
+    geofencingRequirements?: string;
+    // Operational & Delivery Status
+    bomReadiness: string;
+    manufacturingStage: string;
+    calibrationTestLogs?: string;
+    afterSalesAmc?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface Drone {
     id: string;
     modelName: string;
@@ -64,6 +96,7 @@ interface ComplianceState {
     teamMembers: TeamMember[];
     subcontractors: Subcontractor[];
     batteries: Battery[];
+    orders: Order[];
     loading: boolean;
 
     // Fetch actions
@@ -71,6 +104,7 @@ interface ComplianceState {
     fetchTeamMembers: () => Promise<void>;
     fetchSubcontractors: () => Promise<void>;
     fetchBatteries: () => Promise<void>;
+    fetchOrders: () => Promise<void>;
 
     // Drone actions
     addDrone: (drone: Omit<Drone, 'id' | 'createdAt' | 'uploads' | 'manufacturedUnits'>) => Promise<void>;
@@ -92,6 +126,11 @@ interface ComplianceState {
     addBattery: (battery: Omit<Battery, 'id' | 'createdAt'>) => Promise<void>;
     deleteBattery: (id: string) => Promise<void>;
 
+    // Order actions
+    addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+    updateOrder: (id: string, updates: Partial<Order>) => Promise<void>;
+    deleteOrder: (id: string) => Promise<void>;
+
     // Upload actions
     updateDroneUploads: (droneId: string, uploadType: string, files: string | string[], label?: string) => Promise<void>;
     assignAccountableManager: (droneId: string, managerId: string) => Promise<void>;
@@ -105,6 +144,7 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
     teamMembers: [],
     subcontractors: [],
     batteries: [],
+    orders: [],
     loading: false,
 
     // Fetch all drones
@@ -394,6 +434,68 @@ export const useComplianceStore = create<ComplianceState>((set, get) => ({
 
         } catch (error) {
             console.error('Failed to update recurring data:', error);
+        }
+    },
+
+    // Order actions
+    fetchOrders: async () => {
+        try {
+            const res = await fetch('/api/orders');
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                set({ orders: data });
+            }
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+        }
+    },
+
+    addOrder: async (order) => {
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order),
+            });
+            const newOrder = await res.json();
+            if (res.ok) {
+                set((state) => ({ orders: [newOrder, ...state.orders] }));
+            } else {
+                throw new Error(newOrder.error || 'Failed to add order');
+            }
+        } catch (error) {
+            console.error('Failed to add order:', error);
+            throw error;
+        }
+    },
+
+    updateOrder: async (id, updates) => {
+        try {
+            const res = await fetch(`/api/orders/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates),
+            });
+            const updatedOrder = await res.json();
+            if (res.ok) {
+                set((state) => ({
+                    orders: state.orders.map((o) => (o.id === id ? updatedOrder : o)),
+                }));
+            } else {
+                throw new Error(updatedOrder.error || 'Failed to update order');
+            }
+        } catch (error) {
+            console.error('Failed to update order:', error);
+            throw error;
+        }
+    },
+
+    deleteOrder: async (id) => {
+        try {
+            await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+            set((state) => ({ orders: state.orders.filter((o) => o.id !== id) }));
+        } catch (error) {
+            console.error('Failed to delete order:', error);
         }
     }
 }));

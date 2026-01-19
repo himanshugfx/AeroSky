@@ -94,3 +94,42 @@ model Battery {
 
   @@map("batteries")
 }
+
+model Order {
+  id                          String   @id @default(uuid())
+  
+  // 1. Core Order & Financial Information
+  contractNumber              String   @unique @map("contract_number")
+  clientName                  String   @map("client_name")
+  clientSegment               String   @map("client_segment")
+  orderDate                   DateTime @map("order_date")
+  estimatedCompletionDate     DateTime? @map("estimated_completion_date")
+  contractValue               Float    @map("contract_value")
+  currency                    String   @default("INR")
+  revenueRecognitionStatus    String   @default("Pending") @map("revenue_recognition_status")
+  
+  // 2. Technical & Configuration Details
+  droneModel                  String   @map("drone_model")
+  droneType                   String   @map("drone_type")
+  weightClass                 String   @map("weight_class")
+  payloadConfiguration        String?  @map("payload_configuration")
+  flightEnduranceRequirements String?  @map("flight_endurance_requirements")
+  softwareAiTier              String?  @map("software_ai_tier")
+  
+  // 3. Regulatory & Compliance Tracking
+  dgcaFaaCertificationStatus  String   @default("Pending") @map("dgca_faa_certification_status")
+  uin                         String?
+  exportLicenseStatus         String?  @map("export_license_status")
+  geofencingRequirements      String?  @map("geofencing_requirements")
+  
+  // 4. Operational & Delivery Status
+  bomReadiness                String   @default("Not Ready") @map("bom_readiness")
+  manufacturingStage          String   @default("In Design") @map("manufacturing_stage")
+  calibrationTestLogs         String?  @db.Text @map("calibration_test_logs")
+  afterSalesAmc               String?  @map("after_sales_amc")
+  
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("updated_at")
+
+  @@map("orders")
+}

@@ -75,3 +75,22 @@ body {
 .zone-red {
   @apply bg-red-500;
 }
+
+/* Dark mode select dropdown options */
+select option {
+  background-color: #1a1a1e;
+  color: #ffffff;
+  padding: 8px 12px;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Style the select element for better dark mode appearance */
+select {
+  color-scheme: dark;
+}

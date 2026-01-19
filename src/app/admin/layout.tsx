@@ -12,6 +12,7 @@ import {
     ChevronRight,
     Bell,
     BatteryCharging,
+    ClipboardList,
 } from "lucide-react";
 
 const menuItems = [
@@ -19,6 +20,7 @@ const menuItems = [
     { href: "/admin/team", label: "Organizational Manual", icon: Users },
     { href: "/admin/subcontractors", label: "Sub-contractors", icon: Wrench },
     { href: "/admin/batteries", label: "Batteries", icon: BatteryCharging },
+    { href: "/admin/orders", label: "Order Book", icon: ClipboardList },
 ];
 
 export default function AdminLayout({

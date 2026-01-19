@@ -23,6 +23,7 @@ import {
     Trash2,
     BatteryCharging,
     ClipboardList,
+    Clock,
 } from "lucide-react";
 import { useComplianceStore } from "@/lib/complianceStore";
 import { FileUploader } from "@/components/FileUploader";
@@ -739,9 +740,21 @@ export default function DroneProfilePage() {
 
                     <div id="recurring-checklist-content" className="hidden p-4 border-t border-white/5 space-y-2">
 
-                        {/* 1. Personnel Management */}
+                        {/* 1. Coming Soon */}
                         <ChecklistItem
-                            title="1. Personnel Management"
+                            title="1. Coming Soon"
+                            description="This section will be added soon"
+                            icon={Clock}
+                            isComplete={false}
+                        >
+                            <div className="p-4 text-center text-gray-500">
+                                <p className="text-sm">This checklist item will be available in a future update.</p>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 2. Personnel Management */}
+                        <ChecklistItem
+                            title="2. Personnel Management"
                             description="Record of personal competence"
                             icon={Users}
                             status={
@@ -1664,7 +1677,7 @@ export default function DroneProfilePage() {
                                                 <td className="border p-2 capitalize">{row.testedItem}</td>
                                                 <td className="border p-2 font-mono">{row.itemId}</td>
                                                 <td className={`border p-2 font-semibold ${row.condition === 'Excellent' ? 'text-green-700' :
-                                                        row.condition === 'Good' ? 'text-blue-700' : 'text-red-700'
+                                                    row.condition === 'Good' ? 'text-blue-700' : 'text-red-700'
                                                     }`}>
                                                     {row.condition}
                                                 </td>
