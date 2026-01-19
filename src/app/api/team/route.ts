@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // Generate sequential access ID (AS001, AS002, etc.)
 async function generateSequentialAccessId() {
@@ -35,6 +37,11 @@ async function generateSequentialAccessId() {
 
 // GET all team members
 export async function GET() {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const teamMembers = await prisma.teamMember.findMany({
             orderBy: { createdAt: "desc" },
@@ -48,6 +55,11 @@ export async function GET() {
 
 // POST create team member
 export async function POST(request: NextRequest) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body = await request.json();
         const { name, phone, email, position } = body;

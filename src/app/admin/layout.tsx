@@ -17,6 +17,7 @@ import {
     Menu,
     X,
 } from "lucide-react";
+import { SessionTimeout } from "@/components/SessionTimeout";
 
 const menuItems = [
     { href: "/admin", label: "Drone Registry", icon: LayoutDashboard },
@@ -42,6 +43,7 @@ export default function AdminLayout({
 
     return (
         <div className="min-h-screen bg-[#050506] text-white flex flex-col lg:flex-row">
+            <SessionTimeout />
             {/* Mobile Backdrop */}
             {isMobileMenuOpen && (
                 <div

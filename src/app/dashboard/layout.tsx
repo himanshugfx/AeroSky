@@ -19,6 +19,7 @@ import {
     X,
 } from 'lucide-react'
 import { useAuthStore } from '@/lib/store'
+import { SessionTimeout } from '@/components/SessionTimeout'
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -61,6 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+            <SessionTimeout />
             {/* Mobile Sidebar Overlay */}
             {isMobileMenuOpen && (
                 <div

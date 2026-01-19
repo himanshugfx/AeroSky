@@ -12,6 +12,12 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
+    // Clear fields on mount as per security rules
+    useEffect(() => {
+        setUsername("");
+        setPassword("");
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -26,6 +32,9 @@ export default function LoginPage() {
         if (result?.error) {
             setError("Invalid credentials. Access Denied.");
             setLoading(false);
+            // Clear fields on error as per security rules
+            setUsername("");
+            setPassword("");
         } else {
             router.push("/admin");
         }
@@ -50,7 +59,7 @@ export default function LoginPage() {
                         <p className="text-gray-400 text-sm text-center">Aerosys Aviation India - Restricted Access</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
                         <div className="space-y-2">
                             <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Username</label>
                             <div className="relative group">

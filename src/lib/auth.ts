@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions = {
     providers: [
@@ -10,11 +12,30 @@ export const authOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                // High secure check for admin/admin
-                if (credentials?.username === "admin" && credentials?.password === "admin") {
-                    return { id: "1", name: "Admin", email: "admin@aerosky.com", role: "admin" };
+                if (!credentials?.username || !credentials?.password) {
+                    return null;
                 }
-                return null;
+
+                const user = await prisma.user.findUnique({
+                    where: { username: credentials.username }
+                });
+
+                if (!user) {
+                    return null;
+                }
+
+                const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
+
+                if (!isPasswordValid) {
+                    return null;
+                }
+
+                return {
+                    id: user.id,
+                    name: user.username,
+                    email: user.username + "@aerosky.com", // Placeholder
+                    role: "admin", // Default role for now, can be expanded if User table has role
+                };
             }
         })
     ],
@@ -25,17 +46,19 @@ export const authOptions = {
         async jwt({ token, user }: any) {
             if (user) {
                 token.role = user.role;
+                token.id = user.id;
             }
             return token;
         },
         async session({ session, token }: any) {
             if (session.user) {
                 session.user.role = token.role;
+                session.user.id = token.id;
             }
             return session;
         }
     },
-    secret: process.env.NEXTAUTH_SECRET || "aerosky-secret-key-123",
+    secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);

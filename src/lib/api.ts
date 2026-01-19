@@ -75,12 +75,21 @@ export const api = axios.create({
 
 // Auth API
 export const authApi = {
-    login: (email: string, password: string) => {
-        useAuthStore.getState().setAuth(MOCK_USER, 'mock-access-token')
-        return mockResolve({ access_token: 'mock-access-token', refresh_token: 'mock-refresh-token', token_type: 'bearer' })
+    login: async (email: string, password: string) => {
+        // Note: For NextAuth, we usually use signIn('credentials', ...) in the component directly
+        // But if we want to keep this helper, we'd need to handle it.
+        // For now, let's just make it a placeholder that indicates next-auth is used.
+        return { message: "Use next-auth signIn instead" };
     },
-    register: (data: any) => mockResolve(MOCK_USER),
-    me: (token?: string) => mockResolve(MOCK_USER),
+    register: async (data: any) => {
+        const response = await axios.post('/api/auth/register', data);
+        return response.data;
+    },
+    me: async () => {
+        // This is usually handled by useSession() in NextAuth
+        const response = await axios.get('/api/auth/session');
+        return response.data;
+    },
 }
 
 // Drones API

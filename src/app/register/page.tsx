@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Shield, Eye, EyeOff, Loader2 } from 'lucide-react'
@@ -18,6 +18,16 @@ export default function RegisterPage() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
+    // Clear fields on mount as per security rules
+    useEffect(() => {
+        setFormData({
+            email: '',
+            password: '',
+            full_name: '',
+            role: 'Pilot',
+        });
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
@@ -28,6 +38,8 @@ export default function RegisterPage() {
             router.push('/login?registered=true')
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Registration failed. Please try again.')
+            // Clear password on error
+            setFormData(prev => ({ ...prev, password: '' }))
         } finally {
             setLoading(false)
         }
