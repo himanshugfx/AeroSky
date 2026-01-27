@@ -162,6 +162,15 @@ export default function DroneProfilePage() {
 
     const [personnelReported, setPersonnelReported] = useState(false);
 
+    // Item 9 State
+    const [materialProcurementData, setMaterialProcurementData] = useState<{ date: string; material: string; quantity: string; vendor: string }[]>([]);
+    const [newMaterialProcurement, setNewMaterialProcurement] = useState({ date: '', material: '', quantity: '', vendor: '' });
+
+    const [uasSoldData, setUasSoldData] = useState<{ date: string; unitSerialNumber: string; soldTo: string }[]>([]);
+    const [newUasSold, setNewUasSold] = useState({ date: '', unitSerialNumber: '', soldTo: '' });
+
+    const [recordType, setRecordType] = useState<'material' | 'uas_sold'>('material');
+
     useEffect(() => {
         Promise.all([fetchDrones(), fetchTeamMembers(), fetchSubcontractors(), fetchBatteries()]).finally(() =>
             setLoading(false)
@@ -197,6 +206,12 @@ export default function DroneProfilePage() {
         }
         if (rData?.operationalRecords) {
             setOperationalRecords(rData.operationalRecords);
+        }
+        if (rData?.materialProcurement) {
+            setMaterialProcurementData(rData.materialProcurement);
+        }
+        if (rData?.uasSold) {
+            setUasSoldData(rData.uasSold);
         }
     }, [drone]);
 
@@ -1397,6 +1412,231 @@ export default function DroneProfilePage() {
                             </div>
                         </ChecklistItem>
 
+                        {/* 8. Coming Soon */}
+                        <ChecklistItem
+                            title="8. Coming Soon"
+                            description="This section will be added soon"
+                            icon={Clock}
+                            isComplete={false}
+                        >
+                            <div className="p-4 text-center text-gray-500">
+                                <p className="text-sm">This checklist item will be available in a future update.</p>
+                            </div>
+                        </ChecklistItem>
+
+                        {/* 9. Procurement & UAS Sales Record */}
+                        <ChecklistItem
+                            title="9. Procurement & UAS Sales Record"
+                            description="Record of material procurement and UAS units sold"
+                            icon={ClipboardList}
+                            isComplete={materialProcurementData.length > 0 || uasSoldData.length > 0}
+                        >
+                            <div className="space-y-4">
+                                {/* Type Toggle */}
+                                <div className="flex gap-2 p-1 bg-white/5 rounded-lg">
+                                    <button
+                                        onClick={() => setRecordType('material')}
+                                        className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${recordType === 'material' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                    >
+                                        Material Procurement
+                                    </button>
+                                    <button
+                                        onClick={() => setRecordType('uas_sold')}
+                                        className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${recordType === 'uas_sold' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                    >
+                                        Record of UAS Sold
+                                    </button>
+                                </div>
+
+                                {recordType === 'material' ? (
+                                    <div className="space-y-4">
+                                        {/* Material Procurement List */}
+                                        {materialProcurementData.length > 0 && (
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-[10px] sm:text-xs text-left text-gray-400">
+                                                    <thead className="text-[10px] text-gray-500 uppercase bg-white/5">
+                                                        <tr>
+                                                            <th className="px-3 py-2">Date</th>
+                                                            <th className="px-3 py-2">Material/Component</th>
+                                                            <th className="px-3 py-2">Quantity</th>
+                                                            <th className="px-3 py-2">Vendor</th>
+                                                            <th className="px-3 py-2 text-right">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-white/5">
+                                                        {materialProcurementData.map((row, index) => (
+                                                            <tr key={index}>
+                                                                <td className="px-3 py-2 whitespace-nowrap">{row.date}</td>
+                                                                <td className="px-3 py-2 font-medium text-white">{row.material}</td>
+                                                                <td className="px-3 py-2">{row.quantity}</td>
+                                                                <td className="px-3 py-2">{row.vendor}</td>
+                                                                <td className="px-3 py-2 text-right">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const newData = materialProcurementData.filter((_, i) => i !== index);
+                                                                            setMaterialProcurementData(newData);
+                                                                            updateRecurringData(droneId, { materialProcurement: newData });
+                                                                        }}
+                                                                        className="text-red-500 hover:text-red-400 p-1"
+                                                                    >
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
+
+                                        {/* Add Material Form */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 bg-white/5 p-3 rounded-xl border border-white/5">
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={newMaterialProcurement.date}
+                                                    onChange={(e) => setNewMaterialProcurement({ ...newMaterialProcurement, date: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Material Name</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Component Name"
+                                                    value={newMaterialProcurement.material}
+                                                    onChange={(e) => setNewMaterialProcurement({ ...newMaterialProcurement, material: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Quantity</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="e.g. 50 Units"
+                                                    value={newMaterialProcurement.quantity}
+                                                    onChange={(e) => setNewMaterialProcurement({ ...newMaterialProcurement, quantity: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Vendor</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Company Name"
+                                                    value={newMaterialProcurement.vendor}
+                                                    onChange={(e) => setNewMaterialProcurement({ ...newMaterialProcurement, vendor: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                if (newMaterialProcurement.date && newMaterialProcurement.material) {
+                                                    const newData = [...materialProcurementData, newMaterialProcurement];
+                                                    setMaterialProcurementData(newData);
+                                                    setNewMaterialProcurement({ date: '', material: '', quantity: '', vendor: '' });
+                                                    updateRecurringData(droneId, { materialProcurement: newData });
+                                                }
+                                            }}
+                                            className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-[0.98]"
+                                        >
+                                            Add Procurement Record
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {/* UAS Sold List */}
+                                        {uasSoldData.length > 0 && (
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-[10px] sm:text-xs text-left text-gray-400">
+                                                    <thead className="text-[10px] text-gray-500 uppercase bg-white/5">
+                                                        <tr>
+                                                            <th className="px-3 py-2">Date</th>
+                                                            <th className="px-3 py-2">Unit Serial No.</th>
+                                                            <th className="px-3 py-2">Sold To</th>
+                                                            <th className="px-3 py-2 text-right">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-white/5">
+                                                        {uasSoldData.map((row, index) => (
+                                                            <tr key={index}>
+                                                                <td className="px-3 py-2 whitespace-nowrap">{row.date}</td>
+                                                                <td className="px-3 py-2 font-mono text-blue-400">{row.unitSerialNumber}</td>
+                                                                <td className="px-3 py-2 text-white font-medium">{row.soldTo}</td>
+                                                                <td className="px-3 py-2 text-right">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const newData = uasSoldData.filter((_, i) => i !== index);
+                                                                            setUasSoldData(newData);
+                                                                            updateRecurringData(droneId, { uasSold: newData });
+                                                                        }}
+                                                                        className="text-red-500 hover:text-red-400 p-1"
+                                                                    >
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
+
+                                        {/* Add Sale Form */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/5 p-3 rounded-xl border border-white/5">
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={newUasSold.date}
+                                                    onChange={(e) => setNewUasSold({ ...newUasSold, date: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Select Unit</label>
+                                                <select
+                                                    value={newUasSold.unitSerialNumber}
+                                                    onChange={(e) => setNewUasSold({ ...newUasSold, unitSerialNumber: e.target.value })}
+                                                    className="w-full bg-[#1a1a1f] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500/50"
+                                                >
+                                                    <option value="">Select Serial Number</option>
+                                                    {(drone.manufacturedUnits || []).map((unit, idx) => (
+                                                        <option key={idx} value={unit.serialNumber}>{unit.serialNumber} (UIN: {unit.uin})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-bold text-gray-500 uppercase ml-1">Sold To</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Buyer Company Name"
+                                                    value={newUasSold.soldTo}
+                                                    onChange={(e) => setNewUasSold({ ...newUasSold, soldTo: e.target.value })}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/50"
+                                                />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                if (newUasSold.date && newUasSold.unitSerialNumber && newUasSold.soldTo) {
+                                                    const newData = [...uasSoldData, newUasSold];
+                                                    setUasSoldData(newData);
+                                                    setNewUasSold({ date: '', unitSerialNumber: '', soldTo: '' });
+                                                    updateRecurringData(droneId, { uasSold: newData });
+                                                }
+                                            }}
+                                            className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-[0.98]"
+                                        >
+                                            Add Sale Record
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </ChecklistItem>
+
                     </div>
                 </div>
             </div>
@@ -1754,6 +1994,66 @@ export default function DroneProfilePage() {
                                     ) : (
                                         <tr>
                                             <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No operational records.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* Material Procurement Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">7. Material Procurement Record</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/3">Material/Component</th>
+                                        <th className="border p-2 w-1/6">Quantity</th>
+                                        <th className="border p-2 w-1/4">Vendor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {materialProcurementData.length > 0 ? (
+                                        materialProcurementData.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date}</td>
+                                                <td className="border p-2 font-semibold">{row.material}</td>
+                                                <td className="border p-2">{row.quantity}</td>
+                                                <td className="border p-2">{row.vendor}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="border p-2 text-center text-gray-500 italic">No material procurement records.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </section>
+
+                        {/* UAS Sold Section in Print */}
+                        <section className="break-inside-avoid mb-8">
+                            <h2 className="text-lg font-bold border-b border-gray-300 mb-3 pb-1">8. Record of UAS Sold</h2>
+                            <table className="w-full text-sm text-left border collapse">
+                                <thead className="bg-gray-100 uppercase text-xs">
+                                    <tr>
+                                        <th className="border p-2 w-1/6">Date</th>
+                                        <th className="border p-2 w-1/3">Unit Serial Number</th>
+                                        <th className="border p-2 w-1/2">Sold To (Company Name)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {uasSoldData.length > 0 ? (
+                                        uasSoldData.map((row, i) => (
+                                            <tr key={i}>
+                                                <td className="border p-2">{row.date}</td>
+                                                <td className="border p-2 font-mono text-blue-800">{row.unitSerialNumber}</td>
+                                                <td className="border p-2 font-semibold">{row.soldTo}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={3} className="border p-2 text-center text-gray-500 italic">No UAS sale records.</td>
                                         </tr>
                                     )}
                                 </tbody>
